@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -10,6 +11,6 @@ int main(int argc, const char** argv)
         testing[i] = i*2+1;
     }
     
-    cout << testing[4];
+    cout << *max_element(testing, testing + 5);
     return 0;
 }
