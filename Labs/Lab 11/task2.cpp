@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <cctype>
 
 using namespace std;
@@ -7,25 +7,25 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
     // Initialize array
-    char string[50];
+    string words;
 
-    // Get string from user
+    // Get words from user
     cout << "Enter a string: ";
-    cin.getline(string, 50);
+    getline(cin, words);
 
     // Convert uppercase to lowercase and vice versa
-    for (int i = 0; i < strlen(string); i++)
+    for (int i = 0; i < words.length(); i++)
     {
-        if (isupper(string[i]) != 0)
+        if (isupper(words[i]) != 0)
         {
-            string[i] = tolower(string[i]);
+            words[i] = tolower(words[i]);
         }
         else
         {
-            string[i] = toupper(string[i]);
+            words[i] = toupper(words[i]);
         }
     }
 
-    cout << string << endl;
+    cout << words << endl;
     return 0;
 }
