@@ -34,20 +34,27 @@ int main(int argc, char const *argv[])
     // Multiply array and add it to a third matrix
     int product[3][3];
 
+    // For loop to do the multiplication
     for(int i = 0; i < 3; i++)
     {
-        
+        // First for loop for columns
         for(int j = 0; j < 3; j++)
         {
+            // Current product
             int current_product = 0;
+            
+            // Second for loop for rows of first array
             for(int k = 0; k < 3; k++)
             {
+                // Multiply values of rows of first array by values of columns of second array
                 current_product += arrayA[i][k] * arrayB[k][j];
             }
+            // Add the accumulated product to the product array
             product[i][j] = current_product;
         }
     }
 
+    // Print result
     cout << "Printing Result: " << endl;
     for (int i = 0; i < 3; i ++)
     {
