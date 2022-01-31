@@ -9,9 +9,11 @@ int main(int argc, char const *argv[])
     cout << "Enter Array ROWS: ";
     cin >> ROWS;
 
+    // Get columns from user
     int COLS = 0;
     cout << "Enter Array COLUMNS: ";
     cin >> COLS;
+
     // Make Array
     int array[ROWS][COLS];
 
@@ -26,12 +28,14 @@ int main(int argc, char const *argv[])
         
     }
 
-    // Check if user wants to rotate right or left
+    // Check if user wants to rotate up or down
     char answer;
     cout << "Do you want to rotate up or down? (U/D): ";
     cin >> answer;
+
     // Select column to rotate:
     int col = 0;
+
     // keep asking until column within parameters
     do
     {
