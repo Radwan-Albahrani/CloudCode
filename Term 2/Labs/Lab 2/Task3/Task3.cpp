@@ -1,7 +1,8 @@
 #include <iostream>
 
 using namespace std;
-
+void rotationfunction(int array[][100], int numberOfRotations, int answer, int col, int ROWS, int COLS);
+int COLS;
 int main(int argc, char const *argv[])
 {
     // Get array ROWS from user
@@ -15,7 +16,7 @@ int main(int argc, char const *argv[])
     cin >> COLS;
 
     // Make Array
-    int array[ROWS][COLS];
+    int array[ROWS][100];
 
     // Get Array Elements from user
     cout << "Enter " << ROWS * COLS << " Elements for the array: ";
@@ -56,8 +57,30 @@ int main(int argc, char const *argv[])
     cin >> numberOfRotations;
 
     // Perform Rotation
+    rotationfunction(array, numberOfRotations, answer, col, ROWS, COLS);
+
+    
+
+    // Print out rotated completed array
+    cout << endl << "Rotated array is: " << endl;
+    for(int i = 0; i < ROWS; i++)
+    {
+        for(int j = 0; j < COLS; j++)
+        {
+            cout << array[i][j] << '\t';
+        }
+        cout << "\n";
+    }
+    return 0;
+
+
+}
+
+
+void rotationfunction(int array[][100], int numberOfRotations, int answer, int col, int ROWS, int COLS)
+{
     // If rotation is down
-    if (answer == 'D')
+    if (answer == 'D' || answer == 'd')
     {
         // Loop for the number of rotations requested
         for(int i = 0; i < numberOfRotations; i++)
@@ -75,7 +98,7 @@ int main(int argc, char const *argv[])
     }
 
     // Do the same thing for rotating up
-    else if(answer == 'U')
+    else if(answer == 'U' || answer == 'u')
     {
         // Loop for the number of rotations requested
         for(int i = 0; i < numberOfRotations; i++)
@@ -91,18 +114,4 @@ int main(int argc, char const *argv[])
             array[ROWS - 1][col] = temp;
         }
     }
-
-    // Print out rotated completed array
-    cout << endl << "Rotated array is: " << endl;
-    for(int i = 0; i < ROWS; i++)
-    {
-        for(int j = 0; j < COLS; j++)
-        {
-            cout << array[i][j] << '\t';
-        }
-        cout << "\n";
-    }
-    return 0;
-
-
 }
