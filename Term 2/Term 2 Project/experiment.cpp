@@ -137,11 +137,11 @@ void CalculateGPA(Student& students, int size)
 	curr_tm = localtime(&curr_time);
     
     // Convert time to string
-	strftime(timeString, 50, "%B %d, %Y, %H:%M:%S", curr_tm);
+	strftime(timeString, 50, "%m/%d/%Y | %I:%M:%S%p", curr_tm);
 	
     // Adding Log
     ofstream logfile;
     logfile.open("Log.txt", ios_base::app);
-    logfile << "[" << timeString << "] " << "GPA to " << students.Name << " Which is: " << students.GPA << ". was Added." << endl;
+    logfile << "[" << timeString << "] " << "- GPA to " << students.Name << " Which is: " << students.GPA << ". was Added." << endl;
     logfile.close(); 
 }
