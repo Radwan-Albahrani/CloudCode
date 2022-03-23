@@ -189,7 +189,7 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
     int counter = 1;
 
     // Start a student counter
-    int studentCounter = 0;
+    int studentCounter = students.size();
 
     // Loop through the lines
     for(int i = 1; i <= numberOfLines; i++)
@@ -244,7 +244,7 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
             // Logging that data has been read
             string log;
             stringstream buffer;
-            buffer << "Read Data for student. This includes: \n" << "Name: " << students[studentCounter].Name << "\nCourses added: " << coursePerStudent[studentCounter];
+            buffer << "Read Data for student. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << coursePerStudent[studentCounter];
             log = buffer.str();
             createLog(log);
 
