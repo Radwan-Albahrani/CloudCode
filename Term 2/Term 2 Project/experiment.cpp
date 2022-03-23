@@ -45,23 +45,22 @@ void CalculateGPA(Student&, int);
 void createLog(string log);
 
 // Function to get data from file
-void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector<int>& coursePerStudent);
+void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStudent);
 
 // Main function
 int main(int argc, char const *argv[])
 {
-    // Necessary counters
-    int studentCounter = 0;
     vector<int> coursePerStudent;
     
     // Create a students vector.
     vector<Student> students;
     
-    ReadStudentsFromFile(students, studentCounter, coursePerStudent);
+    ReadStudentsFromFile(students, coursePerStudent);
     
     // Print GPA
     cout << students[0].GPA << endl;
     cout << students[1].GPA << endl;
+    cout << students.size();
     
     return 0;
 }
@@ -164,7 +163,7 @@ void createLog(string log)
 }
 
 // Function to read student data from file
-void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector<int>& coursePerStudent)
+void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStudent)
 {
     // A number of lines counter
     int numberOfLines = 0;
@@ -188,6 +187,9 @@ void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector
     
     // Start the courses counter
     int counter = 1;
+
+    // Start a student counter
+    int studentCounter = 0;
 
     // Loop through the lines
     for(int i = 1; i <= numberOfLines; i++)
