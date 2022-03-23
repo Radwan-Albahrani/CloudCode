@@ -16,6 +16,7 @@ TODO:
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 // Grades struct
@@ -37,6 +38,9 @@ struct Student
 
 // Function to calculate GPA
 void CalculateGPA(Student&, int);
+
+//Function to create logs:
+void createLog(string log);
 
 // Main function
 int main(int argc, char const *argv[])
@@ -66,7 +70,7 @@ int main(int argc, char const *argv[])
 // Function to calculate GPA by reference
 void CalculateGPA(Student& students, int size)
 {
-    // Prepare total points and total credit houts
+    // Prepare total points and total credit hours
     double totalpoints = 0;
     int totalhours = 0;
 
@@ -128,6 +132,20 @@ void CalculateGPA(Student& students, int size)
     // Put students GPA into profile
     students.GPA = totalpoints/totalhours;
 
+    // Making a log string
+    string log;
+    ostringstream buffer;
+    buffer << "GPA for " << students.Name << " Has been added. Value: " << students.GPA;
+    log = buffer.str();
+
+    // Creating log through function.
+    createLog(log);
+
+    
+}
+
+void createLog(string log)
+{
     // Get current time
     time_t curr_time = time(0);
 	tm * curr_tm;
@@ -138,10 +156,10 @@ void CalculateGPA(Student& students, int size)
     
     // Convert time to string
 	strftime(timeString, 50, "%m/%d/%Y | %I:%M:%S%p", curr_tm);
-	
+    
     // Adding Log
     ofstream logfile;
     logfile.open("Log.txt", ios_base::app);
-    logfile << "[" << timeString << "] " << "- GPA to " << students.Name << " Which is: " << students.GPA << ". was Added." << endl;
+    logfile << "[" << timeString << "] " << "- " << log << endl;
     logfile.close(); 
 }
