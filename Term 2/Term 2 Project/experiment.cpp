@@ -144,6 +144,7 @@ void CalculateGPA(Student& students, int size)
     
 }
 
+// Function to create a log
 void createLog(string log)
 {
     // Get current time
