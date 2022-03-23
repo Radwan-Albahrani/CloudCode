@@ -12,11 +12,13 @@ TODO:
 
 */
 
+// Including
 #include <iostream>
 #include <string>
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <vector>
 using namespace std;
 
 // Grades struct
@@ -32,7 +34,7 @@ struct Grades
 struct Student
 {
     string Name;
-    Grades courses[100];
+    vector<Grades> courses;
     double GPA;
 };
 
@@ -42,28 +44,25 @@ void CalculateGPA(Student&, int);
 //Function to create logs:
 void createLog(string log);
 
+// Function to get data from file
+void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector<int>& coursePerStudent);
+
 // Main function
 int main(int argc, char const *argv[])
 {
     // Necessary counters
     int studentCounter = 0;
-    int coursePerStudent[100] = {0};
+    vector<int> coursePerStudent;
     
-    // Testing phase: Create students and add random info
-    Student students[100];
-    students[0].Name = "Ahmad";
-    students[0].courses[0].percentage = 85;
-    students[0].courses[0].credit = 3;
+    // Create a students vector.
+    vector<Student> students;
     
-    // Counter for how many students added and their courses
-    studentCounter++;
-    coursePerStudent[0]++;
-
-    // Calculate GPA of students
-    CalculateGPA(students[0], coursePerStudent[0]);
-
+    ReadStudentsFromFile(students, studentCounter, coursePerStudent);
+    
     // Print GPA
-    cout << students[0].GPA;
+    cout << students[0].GPA << endl;
+    cout << students[1].GPA << endl;
+    
     return 0;
 }
 
@@ -141,7 +140,6 @@ void CalculateGPA(Student& students, int size)
     // Creating log through function.
     createLog(log);
 
-    
 }
 
 // Function to create a log
@@ -163,4 +161,100 @@ void createLog(string log)
     logfile.open("Log.txt", ios_base::app);
     logfile << "[" << timeString << "] " << "- " << log << endl;
     logfile.close(); 
+}
+
+void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector<int>& coursePerStudent)
+{
+    // A number of lines counter
+    int numberOfLines = 0;
+
+    // Variables to store line and file
+    string line;
+    ifstream file;
+
+    // Opening Data file
+    file.open("Data.txt");
+
+    // Get the number of lines
+    while(getline(file, line))
+    {
+        numberOfLines++;
+    }
+    
+    // Get back to beginning of file
+    file.clear();
+    file.seekg(0);
+    
+    // Start the courses counter
+    int counter = 1;
+
+    // Loop through the lines
+    for(int i = 1; i <= numberOfLines; i++)
+    {
+        // If the line is even, we need to get all the courses registered
+        if(i % 2 == 0)
+        {
+            // Get the entire line
+            getline(file, line);
+
+            // Put the line in a stream
+            stringstream sstr(line);
+            
+            // While there is still stuff in the stream
+            while(sstr.good())
+            {
+                // Create a substring up until the first comma
+                string substr;
+                getline(sstr, substr, ',');
+
+                // Creating courses object for that student
+                students[studentCounter].courses.push_back(Grades());
+
+                // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
+                if(counter == 1)
+                {
+                    students[studentCounter].courses[coursePerStudent[studentCounter]].CourseName = substr;
+                    counter++;
+                }
+
+                // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
+                else if(counter == 2)
+                {
+                    students[studentCounter].courses[coursePerStudent[studentCounter]].percentage = stod(substr);
+                    counter++;
+                }
+                // If the courses counter is 3, We are at credit score
+                else
+                {
+                    // add credit score to proper place
+                    students[studentCounter].courses[coursePerStudent[studentCounter]].credit = stod(substr);
+
+                    // Reset courses counter
+                    counter = 1;
+
+                    // Add 1 to the number of courses to that student.
+                    coursePerStudent[studentCounter]++;
+                }
+
+            }
+            // Calculate GPA of current student
+            CalculateGPA(students[studentCounter], coursePerStudent[studentCounter]);
+
+            // Add one to the student counter.
+            studentCounter++;
+            
+        }
+        else
+        {
+            // Creating new student
+            students.push_back(Student());
+            
+            // Creating courses per student for that student
+            coursePerStudent.push_back(0);
+
+            // add name to that student
+            getline(file, line);
+            students[studentCounter].Name = line;
+        }
+    }
 }

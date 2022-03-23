@@ -1,0 +1,4 @@
+Ahmad
+Math,98,3.0,Science,75,3.0
+Khalid
+Math,92,3.0,Science,92,3.0
