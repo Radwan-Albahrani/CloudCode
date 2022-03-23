@@ -237,6 +237,14 @@ void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector
                 }
 
             }
+            
+            // Logging that data has been read
+            string log;
+            stringstream buffer;
+            buffer << "Read Data for student. This includes: \n" << "Name: " << students[studentCounter].Name << "\nCourses added: " << coursePerStudent[studentCounter];
+            log = buffer.str();
+            createLog(log);
+
             // Calculate GPA of current student
             CalculateGPA(students[studentCounter], coursePerStudent[studentCounter]);
 
