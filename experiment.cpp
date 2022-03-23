@@ -5,7 +5,7 @@ TODO:
     -A Search a student #Abdulmalik
     -We need a function to add a student. #Abdulelah
     -A function to remove a student. #ammar and salman
-    -A function to edit student courses.  #ammar and salmnan
+    -A function to edit student courses.  #Abdulelah and Abdulmalik
     -A function to add a course to a student. #Radwan
     -A function to remove a course from a student. #Radwan
     -A function to display student information. #Salman
