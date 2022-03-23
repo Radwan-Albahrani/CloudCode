@@ -163,6 +163,7 @@ void createLog(string log)
     logfile.close(); 
 }
 
+// Function to read student data from file
 void ReadStudentsFromFile(vector<Student>& students, int& studentCounter, vector<int>& coursePerStudent)
 {
     // A number of lines counter
