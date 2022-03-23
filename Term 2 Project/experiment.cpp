@@ -15,6 +15,7 @@ TODO:
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <fstream>
 using namespace std;
 
 // Grades struct
@@ -126,6 +127,21 @@ void CalculateGPA(Student& students, int size)
 
     // Put students GPA into profile
     students.GPA = totalpoints/totalhours;
-    string gpaAdded =  "GPA added to database";
-    cout << gpaAdded;  
+
+    // Get current time
+    time_t curr_time = time(0);
+	tm * curr_tm;
+	char timeString[100];
+	
+    // Get local time from the time variable
+	curr_tm = localtime(&curr_time);
+    
+    // Convert time to string
+	strftime(timeString, 50, "%B %d, %Y, %H:%M:%S", curr_tm);
+	
+    // Adding Log
+    ofstream logfile;
+    logfile.open("Log.txt", ios_base::app);
+    logfile << "[" << timeString << "] " << "GPA to " << students.Name << " Which is: " << students.GPA << ". was Added." << endl;
+    logfile.close(); 
 }
