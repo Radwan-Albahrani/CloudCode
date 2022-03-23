@@ -1,10 +1,26 @@
+/*
+
+TODO:
+    -We need a menu. #Ammar
+    -A Search a student #Abdulmalik
+    -We need a function to add a student. #Abdulelah
+    -A function to remove a student. #ammar and salman
+    -A function to edit student courses.  #ammar and salmnan
+    -A function to add a course to a student. #Radwan
+    -A function to remove a course from a student. #Radwan
+    -A function to display student information. #Salman
+
+*/
+
 #include <iostream>
 #include <string>
+#include <ctime>
 using namespace std;
 
 // Grades struct
 struct Grades
 {
+    string CourseName;
     double percentage;
     int credit = 0;
 };
@@ -109,5 +125,7 @@ void CalculateGPA(Student& students, int size)
     }
 
     // Put students GPA into profile
-    students.GPA = totalpoints/totalhours;  
+    students.GPA = totalpoints/totalhours;
+    string gpaAdded =  "GPA added to database";
+    cout << gpaAdded;  
 }
