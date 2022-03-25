@@ -26,7 +26,7 @@ struct Grades
 {
     string CourseName;
     double percentage;
-    int credit = 0;
+    double credit = 0;
 };
 
 
@@ -47,6 +47,9 @@ void createLog(string log);
 // Function to get data from file
 void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStudent);
 
+// Function to write new data after program ends
+void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStudent);
+
 // Main function
 int main(int argc, char const *argv[])
 {
@@ -56,11 +59,24 @@ int main(int argc, char const *argv[])
     vector<Student> students;
     
     ReadStudentsFromFile(students, coursePerStudent);
-    
+
+    // Test Adding Students Test
+    // students.push_back(Student());
+    // students[students.size()-1].Name = "Mohammad";
+    // students[students.size()-1].courses.push_back(Grades());
+    // students[students.size()-1].courses[0].CourseName = "Math";
+    // students[students.size()-1].courses[0].percentage = 95.4;
+    // students[students.size()-1].courses[0].credit = 3.5;
+    // coursePerStudent.push_back(0);
+    // coursePerStudent[coursePerStudent.size()-1] += 1;
+    // CalculateGPA(students[students.size()-1], coursePerStudent[coursePerStudent.size()-1]);
+
     // Print GPA
     cout << students[0].GPA << endl;
     cout << students[1].GPA << endl;
     cout << students.size();
+
+    WriteStudentsToFile(students, coursePerStudent);
     
     return 0;
 }
@@ -267,5 +283,82 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
             getline(file, line);
             students[studentCounter].Name = line;
         }
+    }
+}
+
+// Function to Write new data after program ends
+void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStudent)
+{
+    // A number of lines counter
+    int numberOfLines = 0;
+
+    // Variables to store line and file
+    string line;
+    ifstream file;
+
+    // Opening Data file
+    file.open("Data.txt");
+
+    // Get the number of lines
+    while(getline(file, line))
+    {
+        numberOfLines++;
+    }
+    file.close();
+
+    // If there were no updates, stop the function
+    if((numberOfLines/2) == students.size())
+    {
+        return;
+    }
+
+    // If updates must be made
+    else
+    {
+        // Start file in output stream and get data
+        ofstream file;
+        file.open("Data.txt");
+        
+        // Loop through students
+        for(int i = 0; i < students.size(); i++)
+        {
+            // Loop through elements of students
+            for(int j = 0; j < 2; j++)
+            {
+                // if we at element 1, we are at name. Put the name in file and start a new line. Go to next loop
+                if(j == 0)
+                {
+                    string name = students[i].Name;
+                    file << name << endl;
+                    continue;
+                }
+                
+                // If we are at courses
+                if(j == 1)
+                {
+                    // Start a new loop for the number of course of the current student
+                    for(int k = 0; k < coursePerStudent[i]; k++)
+                    {
+                        // comma to be added at the end of each credit except the last one
+                        if(k > 0 && k != coursePerStudent[i])
+                        {
+                            file << ",";
+                        }
+                        // Add course name then a comma
+                        file << students[i].courses[k].CourseName << ",";
+                        
+                        // Add course percentage then add a comma
+                        file << students[i].courses[k].percentage << ",";
+
+                        // Add course credit
+                        file << students[i].courses[k].credit;
+                    }
+                    // New line after the loop for the next student
+                    file << endl;
+                }
+            }
+
+        }
+
     }
 }
