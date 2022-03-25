@@ -19,6 +19,7 @@ TODO:
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 // Grades struct
@@ -38,6 +39,9 @@ struct Student
     double GPA;
 };
 
+// Sorting Function
+bool compareByCharacter(const Student &a, const Student &b);
+
 // Function to calculate GPA
 void CalculateGPA(Student&, int);
 
@@ -45,38 +49,37 @@ void CalculateGPA(Student&, int);
 void createLog(string log);
 
 // Function to get data from file
-void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStudent);
+void ReadStudentsFromFile(vector<Student>& students);
 
 // Function to write new data after program ends
-void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStudent);
+void WriteStudentsToFile(vector<Student>& students);
 
 // Main function
 int main(int argc, char const *argv[])
 {
-    vector<int> coursePerStudent;
-    
     // Create a students vector.
     vector<Student> students;
     
-    ReadStudentsFromFile(students, coursePerStudent);
+    ReadStudentsFromFile(students);
 
     // Test Adding Students Test
     // students.push_back(Student());
-    // students[students.size()-1].Name = "Mohammad";
+    // students[students.size()-1].Name = "Bader";
     // students[students.size()-1].courses.push_back(Grades());
-    // students[students.size()-1].courses[0].CourseName = "Math";
-    // students[students.size()-1].courses[0].percentage = 95.4;
+    // students[students.size()-1].courses[0].CourseName = "Computer Science";
+    // students[students.size()-1].courses[0].percentage = 970;
     // students[students.size()-1].courses[0].credit = 3.5;
-    // coursePerStudent.push_back(0);
-    // coursePerStudent[coursePerStudent.size()-1] += 1;
-    // CalculateGPA(students[students.size()-1], coursePerStudent[coursePerStudent.size()-1]);
-
+    // CalculateGPA(students[students.size()-1], students[students.size()-1].courses.size());
+    
+    // Quickly Sort by First letter.
+    sort(students.begin(), students.end(), compareByCharacter);
+    
     // Print GPA
     cout << students[0].GPA << endl;
     cout << students[1].GPA << endl;
     cout << students.size();
-
-    WriteStudentsToFile(students, coursePerStudent);
+    
+    WriteStudentsToFile(students);
     
     return 0;
 }
@@ -179,7 +182,7 @@ void createLog(string log)
 }
 
 // Function to read student data from file
-void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStudent)
+void ReadStudentsFromFile(vector<Student>& students)
 {
     // A number of lines counter
     int numberOfLines = 0;
@@ -224,6 +227,7 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
             // Put the line in a stream
             stringstream sstr(line);
             
+            int size = 0;
             // While there is still stuff in the stream
             while(sstr.good())
             {
@@ -231,33 +235,30 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
                 string substr;
                 getline(sstr, substr, ',');
 
-                // Creating courses object for that student
-                students[studentCounter].courses.push_back(Grades());
-
                 // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
                 if(counter == 1)
                 {
-                    students[studentCounter].courses[coursePerStudent[studentCounter]].CourseName = substr;
+                    // Creating a new Grades Object and Starting with it.
+                    students[studentCounter].courses.push_back(Grades());
+                    size = students[studentCounter].courses.size() - 1;
+                    students[studentCounter].courses[size].CourseName = substr;
                     counter++;
                 }
 
                 // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
                 else if(counter == 2)
                 {
-                    students[studentCounter].courses[coursePerStudent[studentCounter]].percentage = stod(substr);
+                    students[studentCounter].courses[size].percentage = stod(substr);
                     counter++;
                 }
                 // If the courses counter is 3, We are at credit score
                 else
                 {
                     // add credit score to proper place
-                    students[studentCounter].courses[coursePerStudent[studentCounter]].credit = stod(substr);
+                    students[studentCounter].courses[size].credit = stod(substr);
 
                     // Reset courses counter
                     counter = 1;
-
-                    // Add 1 to the number of courses to that student.
-                    coursePerStudent[studentCounter]++;
                 }
 
             }
@@ -265,12 +266,12 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
             // Logging that data has been read
             string log;
             stringstream buffer;
-            buffer << "Read Data for student. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << coursePerStudent[studentCounter];
+            buffer << "Read Data for student. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << students[studentCounter].courses.size();
             log = buffer.str();
             createLog(log);
 
             // Calculate GPA of current student
-            CalculateGPA(students[studentCounter], coursePerStudent[studentCounter]);
+            CalculateGPA(students[studentCounter], students[studentCounter].courses.size());
 
             // Add one to the student counter.
             studentCounter++;
@@ -280,9 +281,6 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
         {
             // Creating new student
             students.push_back(Student());
-            
-            // Creating courses per student for that student
-            coursePerStudent.push_back(0);
 
             // add name to that student
             getline(file, line);
@@ -292,7 +290,7 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
 }
 
 // Function to Write new data after program ends
-void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStudent)
+void WriteStudentsToFile(vector<Student>& students)
 {
     // A number of lines counter
     int numberOfLines = 0;
@@ -342,10 +340,10 @@ void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStuden
                 if(j == 1)
                 {
                     // Start a new loop for the number of course of the current student
-                    for(int k = 0; k < coursePerStudent[i]; k++)
+                    for(int k = 0; k < students[i].courses.size(); k++)
                     {
                         // comma to be added at the end of each credit except the last one
-                        if(k > 0 && k != coursePerStudent[i])
+                        if(k > 0 && k != students[i].courses.size())
                         {
                             file << ",";
                         }
@@ -366,4 +364,10 @@ void WriteStudentsToFile(vector<Student>& students, vector<int>& coursePerStuden
         }
 
     }
+}
+
+// Sorting Function
+bool compareByCharacter(const Student &a, const Student &b)
+{
+    return tolower(a.Name[0]) < tolower(b.Name[0]);
 }

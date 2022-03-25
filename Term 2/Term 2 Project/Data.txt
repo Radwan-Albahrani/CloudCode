@@ -1,5 +1,7 @@
 Ahmad
 Math,98,3,Science,75,3
+Bader
+Computer Science,970,3.5
 Khalid
 Math,92,3,Science,92,3
 Mohammad
