@@ -190,6 +190,11 @@ void ReadStudentsFromFile(vector<Student>& students, vector<int>& coursePerStude
 
     // Opening Data file
     file.open("Data.txt");
+    if(!file.is_open())
+    {
+        ofstream file("Data.txt");
+        return;
+    }
 
     // Get the number of lines
     while(getline(file, line))
