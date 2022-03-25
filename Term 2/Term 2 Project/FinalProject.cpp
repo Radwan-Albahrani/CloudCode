@@ -67,7 +67,7 @@ int main(int argc, char const *argv[])
     // students[students.size()-1].Name = "Bader";
     // students[students.size()-1].courses.push_back(Grades());
     // students[students.size()-1].courses[0].CourseName = "Computer Science";
-    // students[students.size()-1].courses[0].percentage = 970;
+    // students[students.size()-1].courses[0].percentage = 70;
     // students[students.size()-1].courses[0].credit = 3.5;
     // CalculateGPA(students[students.size()-1], students[students.size()-1].courses.size());
     
