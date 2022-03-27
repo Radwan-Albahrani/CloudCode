@@ -92,9 +92,9 @@ void CalculateGPA(Student& students, int size)
     int totalhours = 0;
 
     // Check if students has courses, and if not, break and return
-    if(students.courses[0].credit == 0)
+    if(size == 0)
     {
-        cout << "Given students has no courses added.";
+        cout << "Student: " << students.Name << " has no courses added." << endl;
         return;
     }
 
@@ -223,46 +223,54 @@ void ReadStudentsFromFile(vector<Student>& students)
         {
             // Get the entire line
             getline(file, line);
-
-            // Put the line in a stream
-            stringstream sstr(line);
-            
-            int size = 0;
-            // While there is still stuff in the stream
-            while(sstr.good())
+            cout << line << endl;
+            if (line == "")
             {
-                // Create a substring up until the first comma
-                string substr;
-                getline(sstr, substr, ',');
-
-                // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
-                if(counter == 1)
-                {
-                    // Creating a new Grades Object and Starting with it.
-                    students[studentCounter].courses.push_back(Grades());
-                    size = students[studentCounter].courses.size() - 1;
-                    students[studentCounter].courses[size].CourseName = substr;
-                    counter++;
-                }
-
-                // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
-                else if(counter == 2)
-                {
-                    students[studentCounter].courses[size].percentage = stod(substr);
-                    counter++;
-                }
-                // If the courses counter is 3, We are at credit score
-                else
-                {
-                    // add credit score to proper place
-                    students[studentCounter].courses[size].credit = stod(substr);
-
-                    // Reset courses counter
-                    counter = 1;
-                }
-
+                cout << "Empty line" << endl;
             }
-            
+            else
+            {
+                // Put the line in a stream
+                stringstream sstr(line);
+                
+                int size = 0;
+                // While there is still stuff in the stream
+                while(sstr.good())
+                {
+                    // Create a substring up until the first comma
+                    string substr;
+                    getline(sstr, substr, ',');
+
+                    // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
+                    if(counter == 1)
+                    {
+                        // Creating a new Grades Object and Starting with it.
+                        students[studentCounter].courses.push_back(Grades());
+                        size = students[studentCounter].courses.size() - 1;
+                        students[studentCounter].courses[size].CourseName = substr;
+                        counter++;
+                    }
+
+                    // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
+                    else if(counter == 2)
+                    {
+                        students[studentCounter].courses[size].percentage = stod(substr);
+                        counter++;
+                    }
+                    // If the courses counter is 3, We are at credit score
+                    else
+                    {
+                        // add credit score to proper place
+                        students[studentCounter].courses[size].credit = stod(substr);
+
+                        // Reset courses counter
+                        counter = 1;
+                    }
+
+                }
+                
+            }
+
             // Logging that data has been read
             string log;
             stringstream buffer;
@@ -275,6 +283,7 @@ void ReadStudentsFromFile(vector<Student>& students)
 
             // Add one to the student counter.
             studentCounter++;
+            
             
         }
         else
