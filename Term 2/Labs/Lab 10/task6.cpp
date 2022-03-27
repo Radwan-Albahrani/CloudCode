@@ -16,10 +16,13 @@ int main(int argc, char const *argv[])
 
 
     // Swapping
-    int *temp;
+    int *temp = new int;
     temp = firstnum;
     firstnum = secondnum;
     secondnum = temp;
+
+    // Deleting temp
+    delete temp, firstnum, secondnum;
 
 
     // Printing Values After swap
