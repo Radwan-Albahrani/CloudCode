@@ -223,10 +223,9 @@ void ReadStudentsFromFile(vector<Student>& students)
         {
             // Get the entire line
             getline(file, line);
-            cout << line << endl;
             if (line == "")
             {
-                cout << "Empty line" << endl;
+                cout << "Data contains Student with no courses." << endl;
             }
             else
             {
