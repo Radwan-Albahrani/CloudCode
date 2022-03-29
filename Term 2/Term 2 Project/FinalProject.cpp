@@ -20,8 +20,11 @@ TODO:
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 using namespace std;
 
+
+// ======================= Structs =======================
 // Grades struct
 struct Grades
 {
@@ -39,6 +42,11 @@ struct Student
     double GPA;
 };
 
+
+// ======================= Global Variables =======================
+bool isModified = false;
+
+// ======================= Functions =======================
 // Sorting Function
 bool compareByCharacter(const Student &a, const Student &b);
 
@@ -52,7 +60,13 @@ void createLog(string log);
 void ReadStudentsFromFile(vector<Student>& students);
 
 // Function to write new data after program ends
-void WriteStudentsToFile(vector<Student>& students);
+void WriteStudentsToFile(vector<Student>& students, bool modified);
+
+// Function to generate timestamp
+string timeStamp();
+
+// Function to generate a report when the user asks
+void GenerateReport(const vector<Student> students);
 
 // Main function
 int main(int argc, char const *argv[])
@@ -77,9 +91,13 @@ int main(int argc, char const *argv[])
     // Print GPA
     cout << students[0].GPA << endl;
     cout << students[1].GPA << endl;
-    cout << students.size();
-    
-    WriteStudentsToFile(students);
+    cout << students.size() << endl;
+
+    // Generate report
+    GenerateReport(students);
+
+    // Update database if necessary
+    WriteStudentsToFile(students, isModified);
     
     return 0;
 }
@@ -163,16 +181,8 @@ void CalculateGPA(Student& students, int size)
 // Function to create a log
 void createLog(string log)
 {
-    // Get current time
-    time_t curr_time = time(0);
-	tm * curr_tm;
-	char timeString[100];
-	
-    // Get local time from the time variable
-	curr_tm = localtime(&curr_time);
-    
-    // Convert time to string
-	strftime(timeString, 50, "%m/%d/%Y | %I:%M:%S%p", curr_tm);
+    // Get timestamp
+    string timeString = timeStamp();
     
     // Adding Log
     ofstream logfile;
@@ -189,6 +199,7 @@ void ReadStudentsFromFile(vector<Student>& students)
 
     // Variables to store line and file
     string line;
+    string avoid;
     ifstream file;
 
     // Opening Data file
@@ -209,6 +220,10 @@ void ReadStudentsFromFile(vector<Student>& students)
     file.clear();
     file.seekg(0);
     
+    // Skip first line
+    getline(file, line);
+    numberOfLines--;
+
     // Start the courses counter
     int counter = 1;
 
@@ -298,15 +313,24 @@ void ReadStudentsFromFile(vector<Student>& students)
 }
 
 // Function to Write new data after program ends
-void WriteStudentsToFile(vector<Student>& students)
+void WriteStudentsToFile(vector<Student>& students, bool modified)
 {
-    // A number of lines counter
-    int numberOfLines = 0;
-    
+
+    // If the database has not been modified, do not write a new one
+    if(!modified)
+    {
+        return;
+    }
     // Start file in output stream and get data
     ofstream file;
     file.open("Data.txt");
-        
+
+    string timeString = timeStamp();
+
+    // Add time to start of database
+    file << "[" << timeString << "]" << endl;
+
+
     // Loop through students
     for(int i = 0; i < students.size(); i++)
     {
@@ -351,6 +375,122 @@ void WriteStudentsToFile(vector<Student>& students)
     }
 }
 
+// Function to generate a timestamp
+string timeStamp()
+{
+    // Get current time
+    time_t curr_time = time(0);
+	tm * curr_tm;
+	char timeString[100];
+	
+    // Get local time from the time variable
+	curr_tm = localtime(&curr_time);
+    
+    // Convert time to string
+	strftime(timeString, 50, "%m/%d/%Y | %I:%M:%S%p", curr_tm);
+
+    return timeString;
+}
+
+// Function to Generate a report when the user asks
+void GenerateReport(const vector<Student> students)
+{
+    // Open a new input file
+    ifstream file;
+    file.open("Data.txt");
+
+    // Get the date modified from data
+    string dateModified;
+    getline(file, dateModified);
+
+    // Close file
+    file.close();
+
+    // Open logs
+    file.open("Log.txt");
+
+    // string to store each line
+    string line;
+    // Loop through number of lines to count
+    int numberOfLines = 0;
+    while(getline(file, line))
+    {
+       numberOfLines++;
+    }
+
+    // Preparing report Variables
+    int modifications = 0;
+    int additions = 0;
+    int deletions = 0;
+
+    // Go back to beginning of file
+    file.clear();
+    file.seekg(0);
+
+    // Start a loop through the file
+    for (size_t i = 0; i < numberOfLines; i++)
+    {
+        // Get the line
+        getline(file, line);
+
+        // If the line includes read, Skip two lines and continue loop
+        if(line.find("Read") != string::npos || line[0] == ' ')
+        {
+            numberOfLines -= 2;
+            getline(file, line);
+            getline(file, line);
+            continue;
+        }
+
+        // If the line includes GPA, skip this loop (GPA is added Automatically and is not considered a modification)
+        else if(line.find("GPA") != string::npos)
+        {
+            continue;
+        }
+
+        // if added is in log, add additions
+        else if(line.find("Added") != string::npos)
+        {
+            additions++;
+        }
+        
+        // If deleted is detected, add deletions
+        else if(line.find("Deleted") != string::npos)
+        {
+            deletions++;
+        }
+
+        // Else if modified was detected, add another modification
+        else if(line.find("Modified") != string::npos)
+        {
+            modifications++;
+        }
+        else
+        {
+            cout << "This type of log was not accounted for: " << line << endl;
+        }
+    }
+    
+    // Close the file
+    file.close();
+
+    // Create a report file
+    ofstream report;
+    report.open("Statistical Report.txt");
+
+    // Timestamp String
+    string reportTime = "[" + timeStamp() + "]";
+
+    // Add information to the report in Tabular Format
+    report << setw(40) << left << "Report Generated at:"  << setw(5) << reportTime << endl;
+    report << "===================================================================" << endl;
+    report << setw(40) << left << "Number of records: " << setw(5) << students.size() << endl;
+    report << setw(40) << left << "Date since last Update: " << setw(5) << dateModified << endl;
+    report << setw(40) << left << "Number of additions in total: " << setw(5) << additions << endl;
+    report << setw(40) << left << "Number of deletions in total: " << setw(5) << deletions << endl;
+    report << setw(40) << left << "Number of Modifications in total: " << setw(5) << modifications << endl;
+
+}
 
 
 
