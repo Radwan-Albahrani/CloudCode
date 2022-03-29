@@ -302,77 +302,59 @@ void WriteStudentsToFile(vector<Student>& students)
 {
     // A number of lines counter
     int numberOfLines = 0;
-
-    // Variables to store line and file
-    string line;
-    ifstream file;
-
-    // Opening Data file
+    
+    // Start file in output stream and get data
+    ofstream file;
     file.open("Data.txt");
-
-    // Get the number of lines
-    while(getline(file, line))
-    {
-        numberOfLines++;
-    }
-    file.close();
-
-    // If there were no updates, stop the function
-    if((numberOfLines/2) == students.size())
-    {
-        return;
-    }
-
-    // If updates must be made
-    else
-    {
-        // Start file in output stream and get data
-        ofstream file;
-        file.open("Data.txt");
         
-        // Loop through students
-        for(int i = 0; i < students.size(); i++)
+    // Loop through students
+    for(int i = 0; i < students.size(); i++)
+    {
+        // Loop through elements of students
+        for(int j = 0; j < 2; j++)
         {
-            // Loop through elements of students
-            for(int j = 0; j < 2; j++)
+            // if we at element 1, we are at name. Put the name in file and start a new line. Go to next loop
+            if(j == 0)
             {
-                // if we at element 1, we are at name. Put the name in file and start a new line. Go to next loop
-                if(j == 0)
-                {
-                    string name = students[i].Name;
-                    file << name << endl;
-                    continue;
-                }
-                
-                // If we are at courses
-                if(j == 1)
-                {
-                    // Start a new loop for the number of course of the current student
-                    for(int k = 0; k < students[i].courses.size(); k++)
-                    {
-                        // comma to be added at the end of each credit except the last one
-                        if(k > 0 && k != students[i].courses.size())
-                        {
-                            file << ",";
-                        }
-                        // Add course name then a comma
-                        file << students[i].courses[k].CourseName << ",";
-                        
-                        // Add course percentage then add a comma
-                        file << students[i].courses[k].percentage << ",";
-
-                        // Add course credit
-                        file << students[i].courses[k].credit;
-                    }
-                    // New line after the loop for the next student
-                    file << endl;
-                }
+                string name = students[i].Name;
+                file << name << endl;
+                continue;
             }
+            
+            // If we are at courses
+            if(j == 1)
+            {
+                // Start a new loop for the number of course of the current student
+                for(int k = 0; k < students[i].courses.size(); k++)
+                {
+                    // comma to be added at the end of each credit except the last one
+                    if(k > 0 && k != students[i].courses.size())
+                    {
+                        file << ",";
+                    }
+                    // Add course name then a comma
+                    file << students[i].courses[k].CourseName << ",";
+                    
+                    // Add course percentage then add a comma
+                    file << students[i].courses[k].percentage << ",";
 
+                    // Add course credit
+                    file << students[i].courses[k].credit;
+                }
+                // New line after the loop for the next student
+                file << endl;
+            }
         }
+
+        
 
     }
 }
+
+
+
+
+
 
 // Sorting Function
 bool compareByCharacter(const Student &a, const Student &b)
