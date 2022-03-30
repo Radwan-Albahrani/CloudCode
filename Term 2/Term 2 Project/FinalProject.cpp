@@ -698,12 +698,15 @@ void addCourse(vector<Student>& student, int i)
     // Make sure its a number
     while (true)
     {
+        // Try to get a number from the user and make sure it is a number
         try
         {
             cout << "Enter Course Number " << i + 1 << "'s Grade in Percent: ";
             getline(cin, percentageString);
             percentage = stod(percentageString);
         }
+
+        // If its not a number, tell the user
         catch(const std::exception& e)
         {
             cout << "Must be a number!" << endl;
@@ -723,13 +726,14 @@ void addCourse(vector<Student>& student, int i)
     }
 
    
-    // Get Percentage
+    // Get Credit of subject
     string creditString;
     int credit = 0;
 
     // Make sure its a number
     while (true)
     {
+        // Try to get an integer from the user
         try
         {
             cout << "Enter Course Number " << i + 1 << "'s Credit hours: ";
@@ -737,12 +741,15 @@ void addCourse(vector<Student>& student, int i)
             credit = stoi(creditString);
             break;
         }
+        
+        // if its not an integer, tell the user
         catch(const std::exception& e)
         {
             cout << "Must be a number!" << endl;
         }
         
     }
+    
     // Add name
     student[student.size()-1].courses[i].CourseName = CourseName;
     // Add Percentage
