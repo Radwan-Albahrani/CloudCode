@@ -1,16 +1,21 @@
-[03/30/2022 | 02:02:43AM] - Read Data for student. This includes: 
+[03/31/2022 | 12:48:17AM] - Read Data for student. This includes: 
 	Name: Ahmad
 	Courses added: 2
-[03/30/2022 | 02:02:43AM] - GPA for Ahmad Has been added. Value: 4.25
-[03/30/2022 | 02:02:43AM] - Read Data for student. This includes: 
+[03/31/2022 | 12:48:17AM] - GPA for Ahmad Has been added. Value: 4.25
+[03/31/2022 | 12:48:17AM] - Read Data for student. This includes: 
+	Name: Ahmad
+	Courses added: 2
+[03/31/2022 | 12:48:17AM] - GPA for Ahmad Has been added. Value: 4.25
+[03/31/2022 | 12:48:17AM] - Read Data for student. This includes: 
 	Name: Bader
 	Courses added: 1
-[03/30/2022 | 02:02:43AM] - GPA for Bader Has been added. Value: 3
-[03/30/2022 | 02:02:43AM] - Read Data for student. This includes: 
+[03/31/2022 | 12:48:17AM] - GPA for Bader Has been added. Value: 3
+[03/31/2022 | 12:48:17AM] - Read Data for student. This includes: 
 	Name: Khalid
 	Courses added: 2
-[03/30/2022 | 02:02:43AM] - GPA for Khalid Has been added. Value: 4.75
-[03/30/2022 | 02:02:43AM] - Read Data for student. This includes: 
+[03/31/2022 | 12:48:17AM] - GPA for Khalid Has been added. Value: 4.75
+[03/31/2022 | 12:48:17AM] - Read Data for student. This includes: 
 	Name: Mohammad
 	Courses added: 1
-[03/30/2022 | 02:02:43AM] - GPA for Mohammad Has been added. Value: 5
+[03/31/2022 | 12:48:17AM] - GPA for Mohammad Has been added. Value: 5
+[03/31/2022 | 12:48:26AM] - Student with name AhmadHas been Deleted.
