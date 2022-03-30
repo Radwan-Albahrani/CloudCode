@@ -95,9 +95,9 @@ int main(int argc, char const *argv[])
     // Create a students vector.
     vector<Student> students;
     
+    // Read all students from database, if exists
     ReadStudentsFromFile(students);
 
-    // Test Adding Students Test
     // Main program loop
     while (true)
     {
@@ -108,7 +108,7 @@ int main(int argc, char const *argv[])
         string choice;
         int realChoice = 0;
 
-        // Try except to see if i can get a number
+        // Try except to see if can get a number
         try
         {
             cout << "\n\nSelect an item from the menu: "; 
@@ -116,14 +116,14 @@ int main(int argc, char const *argv[])
             realChoice = stoi(choice);
             
         }
+
+        // Yell user it must be a number
         catch(const std::exception& e)
         {
             cout << "Input must be a number. Try again.\n";
+            continue;
         }
         
-       
-       
-
         // Switch statement for choices
         switch (realChoice)
         {
@@ -150,6 +150,7 @@ int main(int argc, char const *argv[])
                 break;
         }
 
+        // If user choses to exit the program
         if(realChoice == 6)
         {
             break;
@@ -168,12 +169,12 @@ int main(int argc, char const *argv[])
     // Quickly Sort by First letter.
     sort(students.begin(), students.end(), compareByCharacter);
     
-    // Print GPA
+    // Print GPA KEEP UNTIL TESTING AND IMPLEMENTATION IS COMPLETE
     cout << students[0].GPA << endl;
     cout << students[1].GPA << endl;
     cout << students.size() << endl;
 
-    // Generate report
+    // Generate report KEEP UNTIL TESTING AND IMPLEMENTATION IS COMPLETE
     GenerateReport(students);
 
     // Update database if necessary
@@ -749,7 +750,7 @@ void addCourse(vector<Student>& student, int i)
         }
         
     }
-    
+
     // Add name
     student[student.size()-1].courses[i].CourseName = CourseName;
     // Add Percentage
