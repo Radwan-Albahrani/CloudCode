@@ -472,9 +472,6 @@ void GenerateReport(const vector<Student> students)
         // If the line includes read, Skip two lines and continue loop
         if(line.find("Read") != string::npos)
         {
-            numberOfLines -= 2;
-            getline(file, line);
-            getline(file, line);
             continue;
         }
 
@@ -487,9 +484,6 @@ void GenerateReport(const vector<Student> students)
         // if added is in log, add additions
         else if(line.find("Added") != string::npos)
         {
-            numberOfLines -= 2;
-            getline(file, line);
-            getline(file, line);
             additions++;
             continue;
         }
@@ -509,9 +503,6 @@ void GenerateReport(const vector<Student> students)
         // Else if modified was detected, add another modification
         else if(line.find("Modified") != string::npos)
         {
-            numberOfLines -= 2;
-            getline(file, line);
-            getline(file, line);
             modifications++;
             continue;
         }
@@ -562,6 +553,7 @@ void addStudent(vector<Student>& students)
     cin.ignore();
     getline(cin, name);
 
+    // Double check to ensure name isnt empty
     while(name == "" || isspace(name[0]) != 0)
     {
         cout << "Name Cannot be Empty.\n";
@@ -648,6 +640,13 @@ void addCourse(vector<Student>& students, int i, int index)
     // Get the course name
     cout << "Enter Course Number " << i + 1 << "'s Name: ";
     getline(cin, CourseName);
+    while(CourseName == "" || isspace(CourseName[0]) != 0)
+    {
+        cout << "Name Cannot be Empty.\n";
+        cout << "Enter Course Number " << i + 1 << "'s Name: ";
+        getline(cin, CourseName);
+    }
+
     
 
     // Prepare prompt for percentage
