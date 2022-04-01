@@ -1,17 +1,3 @@
-/*
-
-TODO:
-    -We need a menu. #Ammar
-    -A Search a students #Abdulmalik
-    -We need a function to add a students. #Abdulelah
-    -A function to remove a students. #ammar and salman
-    -A function to edit students courses.  #Abdulelah and Abdulmalik
-    -A function to add a course to a students. #Radwan
-    -A function to remove a course from a students. #Radwan
-    -A function to display students information. #Salman
-
-*/
-
 // Including
 #include <iostream>
 #include <string>
@@ -795,7 +781,7 @@ void selectStudent(vector<Student>& students)
                         cout << "4 - Return to Previous Menu\n\n";
 
                         int choice = getInt("Please Select Item From Menu: ");
-                        // Change coure name
+                        // Change course name
                         if(choice == 1)
                         {
                             // Get New Course name
@@ -1040,7 +1026,7 @@ int searchCourse(const vector<Grades> courses)
 // Function to Display All students Neatly
 void displayAllStudents(vector<Student>& students)
 {
-    // Display all  students
+    // Display all students in Tabular Format
     cout << "Displaying Students: " << endl;
     cout << setw(20) << left << "Name";
     cout << setw(30) << "Courses";
@@ -1048,7 +1034,7 @@ void displayAllStudents(vector<Student>& students)
     cout << setw(5) << "Credit"; 
     cout << endl;
 
-        // Loop through all students and display in Tabular Format
+        // Loop through all students and Display appropriate information in appropriate Columns
         for(int i = 0; i < students.size(); i++)
         {
             cout << setw(20) << students[i].Name;
