@@ -2,13 +2,13 @@
 
 TODO:
     -We need a menu. #Ammar
-    -A Search a student #Abdulmalik
-    -We need a function to add a student. #Abdulelah
-    -A function to remove a student. #ammar and salman
-    -A function to edit student courses.  #Abdulelah and Abdulmalik
-    -A function to add a course to a student. #Radwan
-    -A function to remove a course from a student. #Radwan
-    -A function to display student information. #Salman
+    -A Search a students #Abdulmalik
+    -We need a function to add a students. #Abdulelah
+    -A function to remove a students. #ammar and salman
+    -A function to edit students courses.  #Abdulelah and Abdulmalik
+    -A function to add a course to a students. #Radwan
+    -A function to remove a course from a students. #Radwan
+    -A function to display students information. #Salman
 
 */
 
@@ -48,46 +48,41 @@ struct Student
 bool isModified = false;
 
 // ======================= Functions =======================
-// Sorting Function
-bool compareByCharacter(const Student &a, const Student &b);
-
-// Function to calculate GPA
-void CalculateGPA(Student&);
-
-//Function to create logs:
-void createLog(string log);
-
-// Function to get data from file
-void ReadStudentsFromFile(vector<Student>& students);
-
-// Function to write new data after program ends
-void WriteStudentsToFile(vector<Student>& students, bool modified);
-
-// Menu
-void mainMenu();
-
-// Add student function
-void addStudent(vector<Student>& student);
-
-// Remove student function
-void removeStudent(vector<Student>& student);
-
-// Select student
-void selectStudent(vector<Student>& student);
-
-vector<int> searchStudents(const vector<Student> students, string name);
-
-// Display all saved students
-void displayAllStudents(vector<Student>& student);
-
-// Add course to student function
-void addCourse(vector<Student>& student, int i);
-
 // Function to generate timestamp
 string timeStamp();
-
+//Function to create logs:
+void createLog(string log);
+// Function to get data from file
+void ReadStudentsFromFile(vector<Student>& students);
+// Menu
+void mainMenu();
+// Add students function
+void addStudent(vector<Student>& students);
+// Add course to students function
+void addCourse(vector<Student>& students, int i, int index);
+// Remove students function
+void removeStudent(vector<Student>& students, int index = -2);
+// Select students
+void selectStudent(vector<Student>& students);
+// Function to calculate GPA
+void CalculateGPA(Student& student);
+// Display all saved students
+void displayAllStudents(vector<Student>& students);
+// Find students in the database
+int searchStudents(const vector<Student> students);
+// Function to search courses
+int searchCourse(const vector<Grades>);
+// Sorting Function
+bool compareByCharacter(const Student &a, const Student &b);
+// Function to write new data after program ends
+void WriteStudentsToFile(vector<Student>& students, bool modified);
 // Function to generate a report when the user asks
 void GenerateReport(const vector<Student> students);
+// Get Int from user
+int getInt(string Prompt);
+// Get double from user
+double getDouble(string Prompt);
+
 
 // Main function
 int main(int argc, char const *argv[])
@@ -104,44 +99,27 @@ int main(int argc, char const *argv[])
         // Display menu
         mainMenu();
 
-        // Prompt for response
-        string choice;
-        int realChoice = 0;
-
-        // Try except to see if can get a number
-        try
-        {
-            cout << "\n\nSelect an item from the menu: "; 
-            cin >> choice;
-            realChoice = stoi(choice);
-            
-        }
-
-        // Yell user it must be a number
-        catch(const std::exception& e)
-        {
-            cout << "Input must be a number. Try again.\n";
-            continue;
-        }
+        // Get choice from user
+        int choice = getInt("\n\nPlease Select an Item from the menu: ");
         
         // Switch statement for choices
-        switch (realChoice)
+        switch (choice)
         {
             case 1:
                 addStudent(students);
                 break;
-            
             case 2:
                 removeStudent(students);
                 break;
             case 3:
-                // selectStudent(students);
+                selectStudent(students);
                 break;
             case 4:
-                // displayAllStudents(students);
+                displayAllStudents(students);
                 break;
             case 5:
                 GenerateReport(students);
+                cout << "Report Generated Successfully\n";
                 break;
             case 6:
                 break;
@@ -151,49 +129,33 @@ int main(int argc, char const *argv[])
         }
 
         // If user choses to exit the program
-        if(realChoice == 6)
+        if(choice == 6)
         {
+            // Quickly Sort by First letter.
+            sort(students.begin(), students.end(), compareByCharacter);
+
+            // Update database if necessary
+            WriteStudentsToFile(students, isModified);
+
+            // Exit Program
             break;
         }
 
     }
-    
-    // students.push_back(Student());
-    // students[students.size()-1].Name = "Bader";
-    // students[students.size()-1].courses.push_back(Grades());
-    // students[students.size()-1].courses[0].CourseName = "Computer Science";
-    // students[students.size()-1].courses[0].percentage = 70;
-    // students[students.size()-1].courses[0].credit = 3.5;
-    // CalculateGPA(students[students.size()-1], students[students.size()-1].courses.size());
-    
-    // Quickly Sort by First letter.
-    sort(students.begin(), students.end(), compareByCharacter);
-    
-    // Print GPA KEEP UNTIL TESTING AND IMPLEMENTATION IS COMPLETE
-    cout << students[0].GPA << endl;
-    cout << students[1].GPA << endl;
-    cout << students.size() << endl;
-
-    // Generate report KEEP UNTIL TESTING AND IMPLEMENTATION IS COMPLETE
-    GenerateReport(students);
-
-    // Update database if necessary
-    WriteStudentsToFile(students, isModified);
-    
     return 0;
 }
 
 // Function to calculate GPA by reference
-void CalculateGPA(Student& students)
+void CalculateGPA(Student& student)
 {
     // Prepare total points and total credit hours
     double totalpoints = 0;
     int totalhours = 0;
-    int size = students.courses.size();
+    int size = student.courses.size();
     // Check if students has courses, and if not, break and return
     if(size == 0)
     {
-        cout << "Student: " << students.Name << " has no courses added." << endl;
+        cout << "Student: " << student.Name << " has no courses added." << endl;
         return;
     }
 
@@ -201,12 +163,12 @@ void CalculateGPA(Student& students)
     for(int i = 0; i < size; i++)
     {
         // Get percentage from current students
-        double percentage = students.courses[i].percentage;
+        double percentage = student.courses[i].percentage;
 
         // Get Credit hours from current students
-        int credit = students.courses[i].credit;
+        int credit = student.courses[i].credit;
 
-        // Add hours directly to total houts
+        // Add hours directly to total hours
         totalhours += credit;
 
         // Convert percentage to raw score based on IAU metrics.
@@ -252,13 +214,13 @@ void CalculateGPA(Student& students)
     GPA = stod(tmp.str());
     tmp.str(string());
 
-    // Add GPA to student
-    students.GPA = GPA;
+    // Add GPA to students
+    student.GPA = GPA;
 
     // Making a log string
     string log;
     ostringstream buffer;
-    buffer << "GPA for " << students.Name << " Has been added. Value: " << students.GPA;
+    buffer << "GPA for " << student.Name << " Has been added. Value: " << student.GPA;
     log = buffer.str();
 
     // Creating log through function.
@@ -279,7 +241,7 @@ void createLog(string log)
     logfile.close(); 
 }
 
-// Function to read student data from file
+// Function to read students data from file
 void ReadStudentsFromFile(vector<Student>& students)
 {
     // A number of lines counter
@@ -315,7 +277,7 @@ void ReadStudentsFromFile(vector<Student>& students)
     // Start the courses counter
     int counter = 1;
 
-    // Start a student counter
+    // Start a students counter
     int studentCounter = students.size();
 
     // Loop through the lines
@@ -376,24 +338,24 @@ void ReadStudentsFromFile(vector<Student>& students)
             // Logging that data has been read
             string log;
             stringstream buffer;
-            buffer << "Read Data for student. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << students[studentCounter].courses.size();
+            buffer << "Read Data for students. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << students[studentCounter].courses.size();
             log = buffer.str();
             createLog(log);
 
-            // Calculate GPA of current student
+            // Calculate GPA of current students
             CalculateGPA(students[studentCounter]);
 
-            // Add one to the student counter.
+            // Add one to the students counter.
             studentCounter++;
             
             
         }
         else
         {
-            // Creating new student
+            // Creating new students
             students.push_back(Student());
 
-            // add name to that student
+            // add name to that students
             getline(file, line);
             students[studentCounter].Name = line;
         }
@@ -436,7 +398,7 @@ void WriteStudentsToFile(vector<Student>& students, bool modified)
             // If we are at courses
             if(j == 1)
             {
-                // Start a new loop for the number of course of the current student
+                // Start a new loop for the number of course of the current students
                 for(int k = 0; k < students[i].courses.size(); k++)
                 {
                     // comma to be added at the end of each credit except the last one
@@ -453,7 +415,7 @@ void WriteStudentsToFile(vector<Student>& students, bool modified)
                     // Add course credit
                     file << students[i].courses[k].credit;
                 }
-                // New line after the loop for the next student
+                // New line after the loop for the next students
                 file << endl;
             }
         }
@@ -554,6 +516,9 @@ void GenerateReport(const vector<Student> students)
         // Else if modified was detected, add another modification
         else if(line.find("Modified") != string::npos)
         {
+            numberOfLines -= 2;
+            getline(file, line);
+            getline(file, line);
             modifications++;
         }
         else
@@ -595,17 +560,17 @@ void mainMenu()
 }
 
 // Function to add students
-void addStudent(vector<Student>& student)
+void addStudent(vector<Student>& students)
 {
-    // Get student name
+    // Get students name
     string name;
-    cout << "Please enter student name: ";
+    cout << "Please enter students name: ";
     cin.ignore();
     getline(cin, name);
 
     // Add name to database
-    student.push_back(Student());
-    student[student.size() - 1].Name = name;
+    students.push_back(Student());
+    students[students.size() - 1].Name = name;
     
     // Make modified true
     isModified = true;
@@ -614,47 +579,31 @@ void addStudent(vector<Student>& student)
     char choice;
     while(true)
     {
-        cout << "Do you want to add courses to this student right now? (Y/N): ";
+        cout << "Do you want to add courses to this students right now? (Y/N): ";
         cin >> choice;
 
         // If they do
         if(tolower(choice) == 'y')
         {
-            // Ask how many courses they want to add
-            string counterString;
-            int counter;
-            // Ensure input is a number
-            while (true)
-            {
-                try
-                {
-                    cout << "How many courses do you want to add: ";
-                    cin >> counterString;
-                    counter = stoi(counterString);
-                    break;
-                }
-                catch(const std::exception& e)
-                {
-                    cout << "Must be a number!" << endl;
-                }
-                
-            }
-            // Clear buffer
-            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            // Get an integer from the user
+            int counter = getInt("How many Courses do you want to add: ");
 
-            // Loop through to add courses to a student
+            // Loop through to add courses to a students
             for (size_t i = 0; i < counter; i++)
             {
-                // Add a course to a student
-                addCourse(student, i);
+               // Clear buffer
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+
+                // Add Course
+                addCourse(students, i, students.size() - 1);
             }
             
             cout << "Courses Added Successfully.\n\n";
-            CalculateGPA(student[student.size() - 1]);
+            CalculateGPA(students[students.size() - 1]);
             break;
         }
         
-        // if user doesn't wanna add a student
+        // if user doesn't wanna add a students
         else if(tolower(choice) == 'n')
         {
             cout << "Student added to database.\n";
@@ -668,130 +617,323 @@ void addStudent(vector<Student>& student)
         }
     }
     
-    // Logging Added student
+    // Logging Added students
     string addTime = timeStamp();
     stringstream buffer;
     buffer << "New Student Added.\n";
-    buffer << "\tStudent Name: " << student[student.size() - 1].Name << endl;
-    buffer << "\tCourses added: " << student[student.size() - 1].courses.size();
+    buffer << "\tStudent Name: " << students[students.size() - 1].Name << endl;
+    buffer << "\tCourses added: " << students[students.size() - 1].courses.size();
 
     string log = buffer.str();
     createLog(log);
 }
 
-// Add Course to student
-void addCourse(vector<Student>& student, int i)
+// Add Course to students
+void addCourse(vector<Student>& students, int i, int index)
 {
     // Create new course
-    student[student.size()-1].courses.push_back(Grades());
+    students[index].courses.push_back(Grades());
+
+    // Get course index
+    int courseIndex = students[index].courses.size() - 1;
 
     // Get Course Name
     string CourseName;
+
+    // Prepare prompt
+    string prompt;
+    stringstream buffer;
+
+    // Get the course name
     cout << "Enter Course Number " << i + 1 << "'s Name: ";
     getline(cin, CourseName);
     
+
+    // Prepare prompt for percentage
+    buffer << "Enter course number " << i + 1 << "'s Percentage Grade: ";
+    prompt = buffer.str();
+    buffer.str(string());
+
+    // Make sure percentage is within accepted range
+    double percentage = -1;
+    while(percentage < 0 || percentage > 100)
+    {
+        percentage = getDouble(prompt);
+    }
+   
+    // Get credits
+    buffer.str(string());
+    buffer << "Enter course number " << i + 1 << "'s Credit Hours: ";
+    prompt = buffer.str();
+    int credit = getInt(prompt);
+
     
 
-    // Get Percentage
-    string percentageString;
-    double percentage = -1;
-
-    // Make sure its a number
-    while (true)
-    {
-        // Try to get a number from the user and make sure it is a number
-        try
-        {
-            cout << "Enter Course Number " << i + 1 << "'s Grade in Percent: ";
-            getline(cin, percentageString);
-            percentage = stod(percentageString);
-        }
-
-        // If its not a number, tell the user
-        catch(const std::exception& e)
-        {
-            cout << "Must be a number!" << endl;
-        }
-
-        // Make sure percentage is within range
-        if (percentage < 0 && percentage > 100)
-        {
-            cout << "Must be between 0 and 100!" << endl;
-            continue;
-        }
-        else
-        {
-            break;
-        }
-        
-    }
-
-   
-    // Get Credit of subject
-    string creditString;
-    int credit = 0;
-
-    // Make sure its a number
-    while (true)
-    {
-        // Try to get an integer from the user
-        try
-        {
-            cout << "Enter Course Number " << i + 1 << "'s Credit hours: ";
-            getline(cin, creditString);
-            credit = stoi(creditString);
-            break;
-        }
-        
-        // if its not an integer, tell the user
-        catch(const std::exception& e)
-        {
-            cout << "Must be a number!" << endl;
-        }
-        
-    }
-
     // Add name
-    student[student.size()-1].courses[i].CourseName = CourseName;
+    students[index].courses[courseIndex].CourseName = CourseName;
     // Add Percentage
-    student[student.size()-1].courses[i].percentage = percentage;
-    // Add credot
-    student[student.size()-1].courses[i].credit = credit;
+    students[index].courses[courseIndex].percentage = percentage;
+    // Add credit
+    students[index].courses[courseIndex].credit = credit;
 }
 
-// Function to search for a student and return all possible locations of said student
-vector<int> searchStudents(const vector<Student> student, string name)
+// Function to select Student
+void selectStudent(vector<Student>& students)
 {
-    // Loop through array of students and find all cases of student with that name
-    vector<int> index;
-    for (size_t i = 0; i < student.size(); i++)
-    {
-        if(strcasecmp(name.c_str(), student[i].Name.c_str()) == 0)
+    // Get the students
+    int index = searchStudents(students);
+
+    // If students has been received
+    if(index != -1)
+    {   
+        // Notify Student that course was found
+        cout << "Student selected Successfully. Please select an item from the menu below:\n";
+
+        // Stick the user in this function
+        while(true)
         {
-            index.push_back(i);
+            // Present Menu
+            cout << "1 - Add Courses to Student.\n";
+            cout << "2 - Remove Course from Student.\n";
+            cout << "3 - Edit a course for Student.\n";
+            cout << "4 - Delete Student.\n";
+            cout << "5 - Back to main Menu.";
+            
+            // Get the user's Choice
+            int choice = getInt("\n\nPlease Select an Item from the menu: ");
+
+            // If 1, add a course to the students
+            if(choice == 1)
+            {
+                // Get Old Course size
+                int CourseSize = students[index].courses.size();
+
+                // Get How many courses the user wants to add
+                int counter = getInt("How many courses do you want to add: ");
+
+                // Loop through and add courses
+                for(int i = 0; i < counter; i++)
+                {
+                    // Clear buffer
+                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+
+                    // Add Course
+                    addCourse(students, i, index);
+                }
+                // Tell user
+                cout << "Courses added Successfully.\n\n";
+
+                // Calculate GPA
+                CalculateGPA(students[index]);
+                
+                // Mark the file as modified
+                isModified = true;
+
+                // Mark Record as modified
+                stringstream buffer;
+                string log;
+                buffer << "Modified Courses for Student: " << students[index].Name;
+                buffer << " - Old Course Total:  " << CourseSize;
+                buffer << " - New Course Total: " << students[index].courses.size();
+                log = buffer.str();
+                createLog(log);
+
+            }
+
+            // Remove a course
+            else if(choice == 2)
+            {
+                // Get course index
+                int courseIndex = searchCourse(students[index].courses);
+                if(courseIndex != -1)
+                {
+                    // Get course name and save it
+                    string courseName = students[index].courses[courseIndex].CourseName;
+
+                    // Get course and delete it
+                    students[index].courses.erase(students[index].courses.begin() + courseIndex);
+                    cout << "Course Deleted Successfully.\n";
+
+                    // Mark File as modified
+                    isModified = true;
+
+                    // Log it
+                    stringstream buffer;
+                    string log;
+                    buffer << "Course deleted Successfully. Course name: " << courseName << ". Student Data has been Modified.";  
+                    
+                    log = buffer.str();
+                    createLog(log);
+
+                    // Recalculate GPA
+                    CalculateGPA(students[index]);
+                }
+            }
+
+            // Modify Course
+            else if(choice == 3)
+            {
+                // Get course
+                int courseIndex = searchCourse(students[index].courses);
+                
+                if(courseIndex != -1)
+                {
+                    // Make Sure Course is modified
+                    bool courseModified = false;
+                    
+                    // Save old course information
+                    Grades oldCourse = students[index].courses[courseIndex];
+
+                    cout << "Course selected Successfully. Please select an item from the menu below:\n";
+                    while(true)
+                    {                     
+                        // Present new menu
+                        
+                        cout << "1 - Change Course Name.\n";
+                        cout << "2 - Change Course Grade.\n";
+                        cout << "3 - Change Course Credit.\n";
+                        cout << "4 - Return to Previous Menu\n\n";
+
+                        int choice = getInt("Please Select Item From Menu: ");
+                        // Change coure name
+                        if(choice == 1)
+                        {
+                            // Get New Course name
+                            string name;
+                            cout << "Enter New Course Name: ";
+                            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                            getline(cin, name);
+
+                            // Update course name
+                            students[index].courses[courseIndex].CourseName = name;
+                            isModified = true;
+                            courseModified = true;
+                            cout << "Course Name Updated.\n";
+                        }
+                        // Change Course Percentage
+                        else if(choice == 2)
+                        {
+                            // Get New Percentage
+                            double percentage = getDouble("Please Enter New Percentage: ");
+
+                            // Update and notify
+                            students[index].courses[courseIndex].percentage = percentage;
+                            isModified = true;
+                            courseModified = true;
+                            cout << "Course Percentage Updated.\n";
+                        }
+                        // Change course Credit
+                        else if(choice == 3)
+                        {
+                            int credit = getInt("Please Enter new Credit Hours: ");
+
+                            // Update and Notify
+                            students[index].courses[courseIndex].credit = credit;
+                            isModified = true;
+                            courseModified = true;
+                            cout << "Course Credit Updated.\n";
+                        }
+                        // Return To Previous Menu
+                        else if(choice == 4)
+                        {
+                            cout << "Returning to Previous Menu. \n\n";
+                            break;
+                        }
+
+                        // Notify user choice was not found
+                        else
+                        {
+                            cout << "Choice not found. Make sure the number is within The Menu\n";
+                        }
+                    }
+
+                    // If the course was modified, Log it and Update it
+                    if(courseModified)
+                    {
+                        stringstream buffer;
+                        string log;
+                        buffer << "Courses Modified. Course with (old) name - " << oldCourse.CourseName << " - Has been changed.";
+                        log = buffer.str();
+                        createLog(log);
+                    }
+                }
+            }
+
+            // If user wants to delete students
+            else if(choice == 4)
+            {
+                removeStudent(students, index);
+                break;
+            }
+
+            // Else if user wants to return to main menu
+            else if(choice == 5)
+            {
+                break;
+            }
+
+            // Notify User choice was not found
+            else
+            {
+                cout << "Choice not found. Make sure the number is within The Menu\n";
+            }
         }
     }
-
-    return index;
 }
 
 // Function to remove Students
-void removeStudent(vector<Student>& student)
+void removeStudent(vector<Student>& students, int index)
 {
-    if(student.size() == 0)
+    if(index == -2)
+    {
+        index = searchStudents(students);
+    }
+    
+
+    if(index != -1)
+    {
+        // Log it before deleting it
+        stringstream buffer;
+        string log;
+        buffer << "Student with name " << students[index].Name << " Has been Deleted.";
+        log = buffer.str();
+        createLog(log);
+
+        // Delete students in that index spot
+        students.erase(students.begin() + index);
+
+        // Inform user
+        cout << "Student has been deleted successfully" << endl;
+        
+        // Tag file to be modified
+        isModified = true;
+    }
+}
+
+// Search for and select one students from the database
+int searchStudents(const vector<Student> students)
+{
+    if(students.size() == 0)
     {
         cout << "No students in Database." << endl;
-        return;
+        return -1;
     }
 
-    // Ask for student name
+    // Ask for students name
     string name;
     cin.ignore(numeric_limits<streamsize>::max(),'\n');
     cout << "Please enter Student name: ";
     getline(cin, name);
 
-    // Loop through array of students and find all cases of student with that name
-    vector<int> index = searchStudents(student, name);
+    // Loop through array of students and find all cases of students with that name
+    vector<int> index;
+    for (size_t i = 0; i < students.size(); i++)
+    {
+        if(strcasecmp(name.c_str(), students[i].Name.c_str()) == 0)
+        {
+            index.push_back(i);
+        }
+    }
 
     // If more than one case
     if(index.size() > 0)
@@ -807,63 +949,184 @@ void removeStudent(vector<Student>& student)
         for(int i = 0; i < index.size(); i++)
         {
             cout << setw(5) << left << i;
-            cout << setw(20) << student[index[i]].Name;
-            for(int j = 0; j < student[index[i]].courses.size(); j++)
+            cout << setw(20) << students[index[i]].Name;
+            for(int j = 0; j < students[index[i]].courses.size(); j++)
             {
                 if(j == 0)
                 {
-                    cout << setw(10) << student[index[i]].courses[j].CourseName << endl;
+                    cout << setw(10) << students[index[i]].courses[j].CourseName << endl;
                 }
                 else
                 {
-                    cout << setw(5) << left << "" << setw(20) << "" << setw(10) << student[index[i]].courses[j].CourseName << endl;
+                    cout << setw(5) << left << "" << setw(20) << "" << setw(10) << students[index[i]].courses[j].CourseName << endl;
                 }
             }
         }
         // Ask user for ID and validate it
-        int id = 0;
-        string idString;
-        while(true)
-        {
-            try
-            {
-                cout << "\n\nSelect by ID: ";
-                getline(cin, idString);
-                id = stoi(idString);
-                break;
-            }
-            catch(const std::exception& e)
-            {
-                cout << "Make sure it is a number!" << endl;
-            }
-            
- 
-        }
-
-        // Log it before deleting it
-        stringstream buffer;
-        string log;
-        buffer << "Student with name " << student[index[id]].Name << " Has been Deleted.";
-        log = buffer.str();
-        createLog(log);
-
-        // Delete student in that index spot
-        student.erase(student.begin() + index[id]);
-
-        // Inform user
-        cout << "Student has been deleted successfully" << endl;
-        
-        // Tag file to be modified
-        isModified = true;
+        int id = getInt("Please Select by ID: ");
+        return index[id];
     }
 
     // If no students were found, inform user
-    else if(index.size() == 0)
+    else
     {
-        cout << "No student found with this name. Please make sure the name is spelled correctly." << endl;
-        return;
+        cout << "No students found with this name. Please make sure the name is spelled correctly." << endl;
+        return -1;
     }
-    
+
+    return -1;
+
+}
+
+// Search course
+int searchCourse(const vector<Grades> courses)
+{
+    // Make sure courses exists
+    if(courses.size() == 0)
+    {
+        cout << "Student has no courses" << endl;
+        return -1;
+    }
+
+    // Ask for course name
+    string name;
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    cout << "Please enter course name: ";
+    getline(cin, name);
+
+    // Find any courses with that name
+    vector<int> index;
+    for (size_t i = 0; i < courses.size(); i++)
+    {
+        if(strcasecmp(name.c_str(), courses[i].CourseName.c_str()) == 0)
+        {
+            index.push_back(i);
+        }
+    }
+
+    // If more than one course
+    if(index.size() > 0)
+    {   
+        // Display all found courses
+        cout << "Course Found. Please Select Student from the list: " << endl;
+        cout << setw(5) << left << "ID";
+        cout << setw(10) << "Courses";
+        cout << endl;
+
+        // Loop through index and display all found courses
+        for(int i = 0; i < index.size(); i++)
+        {
+            cout << setw(5) << left << i;
+            cout << setw(10) << courses[index[i]].CourseName;
+            cout << endl;
+        }
+        // Ask user for ID and validate it
+        int id = getInt("Please Select by ID: ");
+        return index[id];
+    }
+
+    // If no students were found, inform user
+    else
+    {
+        cout << "No Courses found with this name. Please make sure the Course name is spelled correctly." << endl;
+        return -1;
+    }
+
+    return -1;
+
+
+}
+
+// Function to Display All students Neatly
+void displayAllStudents(vector<Student>& students)
+{
+    // Display all  students
+    cout << "Displaying Students: " << endl;
+    cout << setw(20) << left << "Name";
+    cout << setw(30) << "Courses";
+    cout << setw(10) << "Percent";
+    cout << setw(5) << "Credit"; 
+    cout << endl;
+
+        // Loop through all students and display in Tabular Format
+        for(int i = 0; i < students.size(); i++)
+        {
+            cout << setw(20) << students[i].Name;
+            for(int j = 0; j < students[i].courses.size(); j++)
+            {
+                if(j == 0)
+                {
+                    cout << setw(30) << students[i].courses[j].CourseName 
+                    << setw(10) << students[i].courses[j].percentage 
+                    << setw(5) << students[i].courses[j].credit << endl;
+                }
+                else
+                {
+                    cout << setw(20)  << left << "" 
+                    << setw(30) << students[i].courses[j].CourseName 
+                    << setw(10) << students[i].courses[j].percentage 
+                    << setw(5) << students[i].courses[j].credit << endl;
+                }
+            }
+           cout << endl 
+           << setw(20) << left << "" 
+           << setw(10) << "GPA: " << students[i].GPA 
+           << endl << "=================================================================" << endl;
+        }
+}
+
+// Get Int from user
+int getInt(string Prompt)
+{
+    string choice;
+    int realChoice = 0;
+    while(true)
+    {
+         // Try except to see if can get a number
+        try
+        {
+            cout << Prompt; 
+            cin >> choice;
+            realChoice = stoi(choice);
+            break;
+            
+        }
+
+        // Yell user it must be a number
+        catch(const std::exception& e)
+        {
+            cout << "Input must be a number. Try again.\n";
+            continue;
+        }
+    }
+   return realChoice;
+}
+
+// Get Double
+double getDouble(string Prompt)
+{
+    string choice;
+    double realChoice = 0;
+    while(true)
+    {
+         // Try except to see if can get a number
+        try
+        {
+            cout << Prompt; 
+            cin >> choice;
+            realChoice = stod(choice);
+            break;
+            
+        }
+
+        // Yell user it must be a number
+        catch(const std::exception& e)
+        {
+            cout << "Input must be a number. Try again.\n";
+            continue;
+        }
+    }
+   return realChoice;
 }
 
 // Sorting Function

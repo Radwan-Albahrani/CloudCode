@@ -1,9 +1,0 @@
-[03/31/2022 | 12:48:29AM]
-Ahmad
-Math,98,3,Science,75,3
-Bader
-Computer Science,70,3
-Khalid
-Math,92,3,Science,92,3
-Mohammad
-Math,95.4,3
