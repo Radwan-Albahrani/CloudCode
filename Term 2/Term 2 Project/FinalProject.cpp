@@ -470,7 +470,7 @@ void GenerateReport(const vector<Student> students)
         getline(file, line);
 
         // If the line includes read, Skip two lines and continue loop
-        if(line.find("Read") != string::npos || line[0] == ' ')
+        if(line.find("Read") != string::npos)
         {
             numberOfLines -= 2;
             getline(file, line);
@@ -491,12 +491,19 @@ void GenerateReport(const vector<Student> students)
             getline(file, line);
             getline(file, line);
             additions++;
+            continue;
         }
-        
+        else if(line[0] == '\t')
+        {
+            getline(file, line);
+            numberOfLines--;
+            continue;
+        }
         // If deleted is detected, add deletions
         else if(line.find("Deleted") != string::npos)
         {
             deletions++;
+            continue;
         }
 
         // Else if modified was detected, add another modification
@@ -506,6 +513,7 @@ void GenerateReport(const vector<Student> students)
             getline(file, line);
             getline(file, line);
             modifications++;
+            continue;
         }
         else
         {
@@ -553,6 +561,13 @@ void addStudent(vector<Student>& students)
     cout << "Please enter students name: ";
     cin.ignore();
     getline(cin, name);
+
+    while(name == "" || isspace(name[0]) != 0)
+    {
+        cout << "Name Cannot be Empty.\n";
+        cout << "Please enter students name: ";
+        getline(cin, name);
+    }
 
     // Add name to database
     students.push_back(Student());
