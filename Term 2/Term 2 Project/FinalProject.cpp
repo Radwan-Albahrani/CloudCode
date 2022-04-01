@@ -640,10 +640,14 @@ void addCourse(vector<Student>& students, int i, int index)
     prompt = buffer.str();
     buffer.str(string());
 
-    // Make sure percentage is within accepted range
+    // Ask for Percentage
     double percentage = -1;
+    percentage = getDouble(prompt);
+
+    // Make sure percentage is within Appropriate Range
     while(percentage < 0 || percentage > 100)
     {
+        cout << "Input must be between 0 and 100" << endl;
         percentage = getDouble(prompt);
     }
    
@@ -652,6 +656,13 @@ void addCourse(vector<Student>& students, int i, int index)
     buffer << "Enter course number " << i + 1 << "'s Credit Hours: ";
     prompt = buffer.str();
     int credit = getInt(prompt);
+
+    // Double Check Credits
+    while(credit < 0 || credit > 10)
+    {
+        cout << "Input must be between 0 and 10" << endl;
+        credit = getDouble(prompt);
+    }
 
     
 
@@ -801,7 +812,11 @@ void selectStudent(vector<Student>& students)
                         {
                             // Get New Percentage
                             double percentage = getDouble("Please Enter New Percentage: ");
-
+                            while(percentage < 0 || percentage > 100)
+                            {
+                                cout << "Input must be between 0 and 100" << endl;
+                                percentage = getDouble("Please Enter New Percentage: ");
+                            }
                             // Update and notify
                             students[index].courses[courseIndex].percentage = percentage;
                             isModified = true;
@@ -811,8 +826,12 @@ void selectStudent(vector<Student>& students)
                         // Change course Credit
                         else if(choice == 3)
                         {
-                            int credit = getInt("Please Enter new Credit Hours: ");
-
+                            int credit = getInt("Please Enter New Credit Hours: ");
+                            while(credit < 0 || credit > 10)
+                            {
+                                cout << "Input must be between 0 and 10" << endl;
+                                credit = getInt("Please Enter New Credit Hours: ");
+                            }
                             // Update and Notify
                             students[index].courses[courseIndex].credit = credit;
                             isModified = true;
@@ -936,6 +955,14 @@ int searchStudents(const vector<Student> students)
         {
             cout << setw(5) << left << i;
             cout << setw(20) << students[index[i]].Name;
+            
+            // If student has no courses, Tell user then go to new line
+            if(students[index[i]].courses.size() == 0)
+            {
+                cout << setw(10) << "No Courses Found." << endl;
+            }
+            
+            // Loop through courses and display them one by one in tabular format
             for(int j = 0; j < students[index[i]].courses.size(); j++)
             {
                 if(j == 0)
@@ -947,9 +974,17 @@ int searchStudents(const vector<Student> students)
                     cout << setw(5) << left << "" << setw(20) << "" << setw(10) << students[index[i]].courses[j].CourseName << endl;
                 }
             }
+
+            // Seperator
+            cout << "=============================================================" << endl;
         }
         // Ask user for ID and validate it
-        int id = getInt("Please Select by ID: ");
+        int id = getInt("\nPlease Select by ID: ");
+        while(id > index.size() - 1 || id < 0)
+        {
+            cout << "ID is not on the list. Please check again\n";
+            id = getInt("\nPlease Select by ID: ");
+        } 
         return index[id];
     }
 
@@ -1008,6 +1043,14 @@ int searchCourse(const vector<Grades> courses)
         }
         // Ask user for ID and validate it
         int id = getInt("Please Select by ID: ");
+
+        // Validate ID
+        while(id > index.size() - 1 || id < 0)
+        {
+            cout << "ID is not on the list. Please check again\n";
+            id = getInt("\nPlease Select by ID: ");
+        } 
+        return index[id];
         return index[id];
     }
 
