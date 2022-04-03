@@ -551,6 +551,11 @@ void mainMenu()
 // Function to add students
 void addStudent(Student students[])
 {
+    if(students[0].ArraySize == 100)
+    {
+        cout << "Database Limit has been reached. Cannot add any more students\n";
+        return;
+    }
     // Get students name
     string name;
     cout << "Please enter students name: ";
@@ -629,6 +634,12 @@ void addStudent(Student students[])
 // Add Course to students
 void addCourse(Student students[], int i, int index)
 {
+    // Dont allow more than 100 courses
+    if(students[index].courseSize == 100)
+    {
+        cout << "Limit for this student has been reached. Cannot add any more courses\n";
+        return;
+    }
     // Create new course
     students[index].courseSize++;
     int size = students[index].courseSize;
@@ -1101,7 +1112,7 @@ void displayAllStudents(Student students[])
 {   
     // Saving Student size
     int size = students[0].ArraySize;
-    
+
     // If no students, Tell user
     if(size == 0)
     {
