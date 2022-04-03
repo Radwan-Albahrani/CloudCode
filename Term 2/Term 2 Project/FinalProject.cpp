@@ -25,7 +25,9 @@ struct Grades
 struct Student
 {
     string Name;
-    vector<Grades> courses;
+    Grades courses[100];
+    int courseSize = 0;
+    int ArraySize = 0;
     double GPA;
 };
 
@@ -39,31 +41,31 @@ string timeStamp();
 //Function to create logs:
 void createLog(string log);
 // Function to get data from file
-void ReadStudentsFromFile(vector<Student>& students);
+void ReadStudentsFromFile(Student students[]);
 // Menu
 void mainMenu();
 // Add students function
-void addStudent(vector<Student>& students);
+void addStudent(Student students[]);
 // Add course to students function
-void addCourse(vector<Student>& students, int i, int index);
+void addCourse(Student students[], int i, int index);
 // Remove students function
-void removeStudent(vector<Student>& students, int index = -2);
+void removeStudent(Student students[], int index = -2);
 // Select students
-void selectStudent(vector<Student>& students);
+void selectStudent(Student students[]);
 // Function to calculate GPA
 void CalculateGPA(Student& student);
 // Display all saved students
-void displayAllStudents(vector<Student>& students);
+void displayAllStudents(Student students[]);
 // Find students in the database
-int searchStudents(const vector<Student> students);
+int searchStudents(const Student students[]);
 // Function to search courses
-int searchCourse(const vector<Grades>);
+int searchCourse(const Grades grades[], int size);
 // Sorting Function
 bool compareByCharacter(const Student &a, const Student &b);
 // Function to write new data after program ends
-void WriteStudentsToFile(vector<Student>& students, bool modified);
+void WriteStudentsToFile(Student students[], bool modified);
 // Function to generate a report when the user asks
-void GenerateReport(const vector<Student> students);
+void GenerateReport(const Student students[]);
 // Get Int from user
 int getInt(string Prompt);
 // Get double from user
@@ -74,7 +76,7 @@ double getDouble(string Prompt);
 int main(int argc, char const *argv[])
 {
     // Create a students vector.
-    vector<Student> students;
+    Student students[100];
     
     // Read all students from database, if exists
     ReadStudentsFromFile(students);
@@ -118,7 +120,7 @@ int main(int argc, char const *argv[])
         if(choice == 6)
         {
             // Quickly Sort by First letter.
-            sort(students.begin(), students.end(), compareByCharacter);
+            sort(students, students + students[0].ArraySize, compareByCharacter);
 
             // Update database if necessary
             WriteStudentsToFile(students, isModified);
@@ -137,7 +139,7 @@ void CalculateGPA(Student& student)
     // Prepare total points and total credit hours
     double totalpoints = 0;
     int totalhours = 0;
-    int size = student.courses.size();
+    int size = student.courseSize;
     // Check if students has courses, and if not, break and return
     if(size == 0)
     {
@@ -228,7 +230,7 @@ void createLog(string log)
 }
 
 // Function to read students data from file
-void ReadStudentsFromFile(vector<Student>& students)
+void ReadStudentsFromFile(Student students[])
 {
     // A number of lines counter
     int numberOfLines = 0;
@@ -264,7 +266,7 @@ void ReadStudentsFromFile(vector<Student>& students)
     int counter = 1;
 
     // Start a students counter
-    int studentCounter = students.size();
+    int studentCounter = students[0].ArraySize;
 
     // Loop through the lines
     for(int i = 1; i <= numberOfLines; i++)
@@ -294,9 +296,9 @@ void ReadStudentsFromFile(vector<Student>& students)
                     // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
                     if(counter == 1)
                     {
-                        // Creating a new Grades Object and Starting with it.
-                        students[studentCounter].courses.push_back(Grades());
-                        size = students[studentCounter].courses.size() - 1;
+                        // Add A course to the student
+                        students[studentCounter].courseSize++;
+                        size = students[studentCounter].courseSize - 1;
                         students[studentCounter].courses[size].CourseName = substr;
                         counter++;
                     }
@@ -324,7 +326,9 @@ void ReadStudentsFromFile(vector<Student>& students)
             // Logging that data has been read
             string log;
             stringstream buffer;
-            buffer << "Read Data for students. This includes: \n" << "\tName: " << students[studentCounter].Name << "\n\tCourses added: " << students[studentCounter].courses.size();
+            buffer << "Read Data for students. This includes: \n" 
+            << "\tName: " << students[studentCounter].Name 
+            << "\n\tCourses added: " << students[studentCounter].courseSize;
             log = buffer.str();
             createLog(log);
 
@@ -339,7 +343,7 @@ void ReadStudentsFromFile(vector<Student>& students)
         else
         {
             // Creating new students
-            students.push_back(Student());
+            students[0].ArraySize++;
 
             // add name to that students
             getline(file, line);
@@ -349,7 +353,7 @@ void ReadStudentsFromFile(vector<Student>& students)
 }
 
 // Function to Write new data after program ends
-void WriteStudentsToFile(vector<Student>& students, bool modified)
+void WriteStudentsToFile(Student students[], bool modified)
 {
 
     // If the database has not been modified, do not write a new one
@@ -368,7 +372,7 @@ void WriteStudentsToFile(vector<Student>& students, bool modified)
 
 
     // Loop through students
-    for(int i = 0; i < students.size(); i++)
+    for(int i = 0; i < students[0].ArraySize; i++)
     {
         // Loop through elements of students
         for(int j = 0; j < 2; j++)
@@ -385,10 +389,10 @@ void WriteStudentsToFile(vector<Student>& students, bool modified)
             if(j == 1)
             {
                 // Start a new loop for the number of course of the current students
-                for(int k = 0; k < students[i].courses.size(); k++)
+                for(int k = 0; k < students[i].courseSize; k++)
                 {
                     // comma to be added at the end of each credit except the last one
-                    if(k > 0 && k != students[i].courses.size())
+                    if(k > 0 && k != students[i].courseSize)
                     {
                         file << ",";
                     }
@@ -429,7 +433,7 @@ string timeStamp()
 }
 
 // Function to Generate a report when the user asks
-void GenerateReport(const vector<Student> students)
+void GenerateReport(const Student students[])
 {
     // Open a new input file
     ifstream file;
@@ -525,7 +529,7 @@ void GenerateReport(const vector<Student> students)
     // Add information to the report in Tabular Format
     report << setw(40) << left << "Report Generated at:"  << setw(5) << reportTime << endl;
     report << "===================================================================" << endl;
-    report << setw(40) << left << "Number of records: " << setw(5) << students.size() << endl;
+    report << setw(40) << left << "Number of records: " << setw(5) << students[0].ArraySize << endl;
     report << setw(40) << left << "Date since last Update: " << setw(5) << dateModified << endl;
     report << setw(40) << left << "Number of additions in total: " << setw(5) << additions << endl;
     report << setw(40) << left << "Number of deletions in total: " << setw(5) << deletions << endl;
@@ -545,7 +549,7 @@ void mainMenu()
 }
 
 // Function to add students
-void addStudent(vector<Student>& students)
+void addStudent(Student students[])
 {
     // Get students name
     string name;
@@ -562,8 +566,9 @@ void addStudent(vector<Student>& students)
     }
 
     // Add name to database
-    students.push_back(Student());
-    students[students.size() - 1].Name = name;
+    students[0].ArraySize++;
+    int size = students[0].ArraySize;
+    students[size - 1].Name = name;
     
     // Make modified true
     isModified = true;
@@ -588,11 +593,11 @@ void addStudent(vector<Student>& students)
                 cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
                 // Add Course
-                addCourse(students, i, students.size() - 1);
+                addCourse(students, i, size - 1);
             }
             
             cout << "Courses Added Successfully.\n\n";
-            CalculateGPA(students[students.size() - 1]);
+            CalculateGPA(students[size - 1]);
             break;
         }
         
@@ -614,21 +619,22 @@ void addStudent(vector<Student>& students)
     string addTime = timeStamp();
     stringstream buffer;
     buffer << "New Student Added.\n";
-    buffer << "\tStudent Name: " << students[students.size() - 1].Name << endl;
-    buffer << "\tCourses added: " << students[students.size() - 1].courses.size();
+    buffer << "\tStudent Name: " << students[size - 1].Name << endl;
+    buffer << "\tCourses added: " << students[size - 1].courseSize;
 
     string log = buffer.str();
     createLog(log);
 }
 
 // Add Course to students
-void addCourse(vector<Student>& students, int i, int index)
+void addCourse(Student students[], int i, int index)
 {
     // Create new course
-    students[index].courses.push_back(Grades());
+    students[index].courseSize++;
+    int size = students[index].courseSize;
 
     // Get course index
-    int courseIndex = students[index].courses.size() - 1;
+    int courseIndex = size - 1;
 
     // Get Course Name
     string CourseName;
@@ -689,7 +695,7 @@ void addCourse(vector<Student>& students, int i, int index)
 }
 
 // Function to select Student
-void selectStudent(vector<Student>& students)
+void selectStudent(Student students[])
 {
     // Get the students
     int index = searchStudents(students);
@@ -717,7 +723,7 @@ void selectStudent(vector<Student>& students)
             if(choice == 1)
             {
                 // Get Old Course size
-                int CourseSize = students[index].courses.size();
+                int CourseSize = students[index].courseSize;
 
                 // Get How many courses the user wants to add
                 int counter = getInt("How many courses do you want to add: ");
@@ -745,7 +751,7 @@ void selectStudent(vector<Student>& students)
                 string log;
                 buffer << "Modified Courses for Student: " << students[index].Name;
                 buffer << " - Old Course Total:  " << CourseSize;
-                buffer << " - New Course Total: " << students[index].courses.size();
+                buffer << " - New Course Total: " << students[index].courseSize;
                 log = buffer.str();
                 createLog(log);
 
@@ -755,14 +761,19 @@ void selectStudent(vector<Student>& students)
             else if(choice == 2)
             {
                 // Get course index
-                int courseIndex = searchCourse(students[index].courses);
+                int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
                 if(courseIndex != -1)
                 {
+                    int size = students[index].courseSize;
                     // Get course name and save it
                     string courseName = students[index].courses[courseIndex].CourseName;
 
                     // Get course and delete it
-                    students[index].courses.erase(students[index].courses.begin() + courseIndex);
+                    for (int j = courseIndex; j < size; j++)
+                    {
+                        students[j] = students[j+1];
+                    }
+                    students[index].courseSize--;
                     cout << "Course Deleted Successfully.\n";
 
                     // Mark File as modified
@@ -785,7 +796,7 @@ void selectStudent(vector<Student>& students)
             else if(choice == 3)
             {
                 // Get course
-                int courseIndex = searchCourse(students[index].courses);
+                int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
                 
                 if(courseIndex != -1)
                 {
@@ -901,7 +912,7 @@ void selectStudent(vector<Student>& students)
 }
 
 // Function to remove Students
-void removeStudent(vector<Student>& students, int index)
+void removeStudent(Student students[], int index)
 {
     if(index == -2)
     {
@@ -919,7 +930,11 @@ void removeStudent(vector<Student>& students, int index)
         createLog(log);
 
         // Delete students in that index spot
-        students.erase(students.begin() + index);
+        for (int j = index; j < students[0].ArraySize; j++)
+        {
+            students[j] = students[j+1];
+        }
+        students[0].ArraySize--;
 
         // Inform user
         cout << "Student has been deleted successfully" << endl;
@@ -930,9 +945,10 @@ void removeStudent(vector<Student>& students, int index)
 }
 
 // Search for and select one students from the database
-int searchStudents(const vector<Student> students)
+int searchStudents(const Student students[])
 {
-    if(students.size() == 0)
+    int size = students[0].ArraySize;
+    if(size == 0)
     {
         cout << "No students in Database." << endl;
         return -1;
@@ -946,7 +962,7 @@ int searchStudents(const vector<Student> students)
 
     // Loop through array of students and find all cases of students with that name
     vector<int> index;
-    for (size_t i = 0; i < students.size(); i++)
+    for (size_t i = 0; i < size; i++)
     {
         if(strcasecmp(name.c_str(), students[i].Name.c_str()) == 0)
         {
@@ -971,13 +987,13 @@ int searchStudents(const vector<Student> students)
             cout << setw(20) << students[index[i]].Name;
             
             // If student has no courses, Tell user then go to new line
-            if(students[index[i]].courses.size() == 0)
+            if(students[index[i]].courseSize == 0)
             {
                 cout << setw(10) << "No Courses Found." << endl;
             }
             
             // Loop through courses and display them one by one in tabular format
-            for(int j = 0; j < students[index[i]].courses.size(); j++)
+            for(int j = 0; j < students[index[i]].courseSize; j++)
             {
                 if(j == 0)
                 {
@@ -1014,10 +1030,10 @@ int searchStudents(const vector<Student> students)
 }
 
 // Search course
-int searchCourse(const vector<Grades> courses)
+int searchCourse(const Grades courses[], int size)
 {
     // Make sure courses exists
-    if(courses.size() == 0)
+    if(size == 0)
     {
         cout << "Student has no courses" << endl;
         return -1;
@@ -1031,7 +1047,7 @@ int searchCourse(const vector<Grades> courses)
 
     // Find any courses with that name
     vector<int> index;
-    for (size_t i = 0; i < courses.size(); i++)
+    for (size_t i = 0; i < size; i++)
     {
         if(strcasecmp(name.c_str(), courses[i].CourseName.c_str()) == 0)
         {
@@ -1081,8 +1097,17 @@ int searchCourse(const vector<Grades> courses)
 }
 
 // Function to Display All students Neatly
-void displayAllStudents(vector<Student>& students)
-{
+void displayAllStudents(Student students[])
+{   
+    // Saving Student size
+    int size = students[0].ArraySize;
+    
+    // If no students, Tell user
+    if(size == 0)
+    {
+        cout << "No Students in Database\n";
+        return;
+    }
     // Display all students in Tabular Format
     cout << "Displaying Students: " << endl;
     cout << setw(20) << left << "Name";
@@ -1092,10 +1117,10 @@ void displayAllStudents(vector<Student>& students)
     cout << endl;
 
         // Loop through all students and Display appropriate information in appropriate Columns
-        for(int i = 0; i < students.size(); i++)
+        for(int i = 0; i < size; i++)
         {
             cout << setw(20) << students[i].Name;
-            for(int j = 0; j < students[i].courses.size(); j++)
+            for(int j = 0; j < students[i].courseSize; j++)
             {
                 if(j == 0)
                 {
