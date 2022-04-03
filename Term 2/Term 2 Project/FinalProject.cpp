@@ -11,71 +11,13 @@
 using namespace std;
 
 
-// ======================= Structs =======================
-// Grades struct
-struct Grades
-{
-    string CourseName;
-    double percentage;
-    int credit = 0;
-};
-
-
-// Student Struct
-struct Student
-{
-    string Name;
-    Grades courses[100];
-    int courseSize = 0;
-    int ArraySize = 0;
-    double GPA;
-};
-
-
-// ======================= Global Variables =======================
-bool isModified = false;
-
-// ======================= Functions =======================
-// Function to generate timestamp
-string timeStamp();
-//Function to create logs:
-void createLog(string log);
-// Function to get data from file
-void ReadStudentsFromFile(Student students[]);
-// Menu
-void mainMenu();
-// Add students function
-void addStudent(Student students[]);
-// Add course to students function
-void addCourse(Student students[], int i, int index);
-// Remove students function
-void removeStudent(Student students[], int index = -2);
-// Select students
-void selectStudent(Student students[]);
-// Function to calculate GPA
-void CalculateGPA(Student& student);
-// Display all saved students
-void displayAllStudents(Student students[]);
-// Find students in the database
-int searchStudents(const Student students[]);
-// Function to search courses
-int searchCourse(const Grades grades[], int size);
-// Sorting Function
-bool compareByCharacter(const Student &a, const Student &b);
-// Function to write new data after program ends
-void WriteStudentsToFile(Student students[], bool modified);
-// Function to generate a report when the user asks
-void GenerateReport(const Student students[]);
-// Get Int from user
-int getInt(string Prompt);
-// Get double from user
-double getDouble(string Prompt);
+#include "Prototypes.h"
 
 
 // Main function
 int main(int argc, char const *argv[])
 {
-    // Create a students vector.
+    // Create a students Array.
     Student students[100];
     
     // Read all students from database, if exists
@@ -782,9 +724,9 @@ void selectStudent(Student students[])
                     // Get course and delete it
                     for (int j = courseIndex; j < size; j++)
                     {
-                        students[j] = students[j+1];
+                        students[index].courses[j] = students[index].courses[j+1];
                     }
-                    students[index].courseSize--;
+                    students[index].courseSize = size - 1;
                     cout << "Course Deleted Successfully.\n";
 
                     // Mark File as modified
@@ -941,12 +883,12 @@ void removeStudent(Student students[], int index)
         createLog(log);
 
         // Delete students in that index spot
-        for (int j = index; j < students[0].ArraySize; j++)
+        int size = students[0].ArraySize - 1;
+        for (int j = index; j < size; j++)
         {
             students[j] = students[j+1];
         }
-        students[0].ArraySize--;
-
+        students[0].ArraySize = size;
         // Inform user
         cout << "Student has been deleted successfully" << endl;
         
@@ -1131,6 +1073,10 @@ void displayAllStudents(Student students[])
         for(int i = 0; i < size; i++)
         {
             cout << setw(20) << students[i].Name;
+            if(students[i].courseSize == 0)
+            {
+                cout << setw(30) << "Student Has No courses Added";
+            }
             for(int j = 0; j < students[i].courseSize; j++)
             {
                 if(j == 0)
