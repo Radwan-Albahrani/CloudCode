@@ -516,6 +516,9 @@ void addStudent(Student students[])
     students[0].ArraySize++;
     int size = students[0].ArraySize;
     students[size - 1].Name = name;
+
+    // Start student with no courses
+    student[size - 1].courseSize = 0;
     
     // Make modified true
     isModified = true;
