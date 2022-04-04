@@ -10,7 +10,7 @@
 #include <cstring>
 using namespace std;
 
-
+// Prototypes and structs
 #include "Prototypes.h"
 
 
