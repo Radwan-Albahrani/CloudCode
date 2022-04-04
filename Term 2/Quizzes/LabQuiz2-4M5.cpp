@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
     // Create Variable
     Fract num1;
     Fract num2;
+    
     // Get the fractions
     cout << "Enter Fraction 1 (Numerator Denominator): ";
     cin >> num1.num >> num1.deno;
