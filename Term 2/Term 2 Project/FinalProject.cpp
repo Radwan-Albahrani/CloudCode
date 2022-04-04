@@ -516,6 +516,10 @@ void addStudent(Student students[])
     students[0].ArraySize++;
     int size = students[0].ArraySize;
     students[size - 1].Name = name;
+
+    // Start student with no courses and no GPA
+    students[size - 1].courseSize = 0;
+    students[size - 1].GPA = 0;
     
     // Make modified true
     isModified = true;
