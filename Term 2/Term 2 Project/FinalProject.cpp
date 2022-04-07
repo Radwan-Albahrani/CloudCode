@@ -503,7 +503,7 @@ void addStudent(Student students[])
     cout << "Please enter students name: ";
     getline(cin, name);
 
-    // Double check to ensure name isnt empty
+    // Double check to ensure name isn't empty
     while(name == "" || isspace(name[0]) != 0)
     {
         cout << "Name Cannot be Empty.\n";
