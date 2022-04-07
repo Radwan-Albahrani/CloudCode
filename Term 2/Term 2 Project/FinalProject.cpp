@@ -501,7 +501,6 @@ void addStudent(Student students[])
     // Get students name
     string name;
     cout << "Please enter students name: ";
-    cin.ignore();
     getline(cin, name);
 
     // Double check to ensure name isnt empty
@@ -525,23 +524,22 @@ void addStudent(Student students[])
     isModified = true;
 
     // Ask if user wants to add courses
-    char choice;
+    string choice;
     while(true)
     {
         cout << "Do you want to add courses to this students right now? (Y/N): ";
-        cin >> choice;
+        getline(cin, choice);
 
         // If they do
-        if(tolower(choice) == 'y')
+        if(tolower(choice[0]) == 'y')
         {
+
             // Get an integer from the user
             int counter = getInt("How many Courses do you want to add: ");
 
             // Loop through to add courses to a students
             for (size_t i = 0; i < counter; i++)
             {
-               // Clear buffer
-                cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
                 // Add Course
                 addCourse(students, i, size - 1);
@@ -553,7 +551,7 @@ void addStudent(Student students[])
         }
         
         // if user doesn't wanna add a students
-        else if(tolower(choice) == 'n')
+        else if(tolower(choice[0]) == 'n')
         {
             cout << "Student added to database.\n";
             break;
@@ -688,8 +686,6 @@ void selectStudent(Student students[])
                 // Loop through and add courses
                 for(int i = 0; i < counter; i++)
                 {
-                    // Clear buffer
-                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
                     // Add Course
                     addCourse(students, i, index);
@@ -780,7 +776,6 @@ void selectStudent(Student students[])
                             // Get New Course name
                             string name;
                             cout << "Enter New Course Name: ";
-                            cin.ignore(numeric_limits<streamsize>::max(),'\n');
                             getline(cin, name);
 
                             // Update course name
@@ -913,7 +908,6 @@ int searchStudents(const Student students[])
 
     // Ask for students name
     string name;
-    cin.ignore(numeric_limits<streamsize>::max(),'\n');
     cout << "Please enter Student name: ";
     getline(cin, name);
 
@@ -921,7 +915,26 @@ int searchStudents(const Student students[])
     vector<int> index;
     for (size_t i = 0; i < size; i++)
     {
-        if(strcasecmp(name.c_str(), students[i].Name.c_str()) == 0)
+        // Get the name of the current student 
+        string currentName = students[i].Name;
+
+        // Lowercase the whole name
+        for (size_t j = 0; j < currentName.length(); j++)
+        {
+            currentName[j] = tolower(currentName[j]);
+        }
+
+        // Lower case the name of the search query
+        for (size_t j = 0; j < name.length(); j++)
+        {
+            name[j] = tolower(name[j]);
+        }
+        
+        // Find any occurrence of the search query in the current student name
+        size_t found = currentName.find(name);
+
+        // If found, add its index over to the index vector
+        if(found != string::npos)
         {
             index.push_back(i);
         }
@@ -998,7 +1011,6 @@ int searchCourse(const Grades courses[], int size)
 
     // Ask for course name
     string name;
-    cin.ignore(numeric_limits<streamsize>::max(),'\n');
     cout << "Please enter course name: ";
     getline(cin, name);
 
@@ -1006,7 +1018,26 @@ int searchCourse(const Grades courses[], int size)
     vector<int> index;
     for (size_t i = 0; i < size; i++)
     {
-        if(strcasecmp(name.c_str(), courses[i].CourseName.c_str()) == 0)
+        // Get the name of the current student 
+        string currentName = courses[i].CourseName;
+
+        // Lowercase the whole name
+        for (size_t j = 0; j < currentName.length(); j++)
+        {
+            currentName[j] = tolower(currentName[j]);
+        }
+
+        // Lower case the name of the search query
+        for (size_t j = 0; j < name.length(); j++)
+        {
+            name[j] = tolower(name[j]);
+        }
+        
+        // Find any occurrence of the search query in the current course name
+        size_t found = currentName.find(name);
+
+        // If found, add its index over to the index vector
+        if(found != string::npos)
         {
             index.push_back(i);
         }
@@ -1107,15 +1138,18 @@ void displayAllStudents(Student students[])
 // Get Int from user
 int getInt(string Prompt)
 {
+    // Initiate Variables
     string choice;
     int realChoice = 0;
+
+    // Start a loop
     while(true)
     {
          // Try except to see if can get a number
         try
         {
             cout << Prompt; 
-            cin >> choice;
+            getline(cin, choice);
             realChoice = stoi(choice);
             break;
             
@@ -1134,15 +1168,18 @@ int getInt(string Prompt)
 // Get Double
 double getDouble(string Prompt)
 {
+    // Initiate Variables
     string choice;
     double realChoice = 0;
+
+    // Start a loop
     while(true)
     {
          // Try except to see if can get a number
         try
         {
             cout << Prompt; 
-            cin >> choice;
+            getline(cin, choice);
             realChoice = stod(choice);
             break;
             
