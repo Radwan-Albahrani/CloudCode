@@ -1,13 +1,5 @@
 // Including
 #include <iostream>
-#include <string>
-#include <ctime>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-#include <cstring>
 #include <filesystem>
 
 // Namespace

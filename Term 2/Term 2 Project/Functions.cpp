@@ -316,8 +316,6 @@ void WriteStudentsToFile(Student students[], bool modified)
     }
 }
 
-
-
 // Function to Generate a report when the user asks
 void GenerateReport(const Student students[])
 {
