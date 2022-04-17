@@ -1,3 +1,8 @@
+#ifndef PROTOTYPES_H
+#define PROTOTYPES_H
+#endif
+
+
 // ======================= Structs =======================
 // Grades struct
 struct Grades
@@ -20,7 +25,7 @@ struct Student
 
 
 // ======================= Global Variables =======================
-bool isModified = false;
+extern bool isModified;
 
 // ======================= Functions =======================
 // Function to generate timestamp
