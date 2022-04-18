@@ -36,10 +36,10 @@ int main(int argc, char const *argv[])
     fs::create_directory("Output") ? cout << "Directory Created. Output will be stored in Directory" << endl : cout << "Directory already exists, Output will be stored in Directory" << endl;
 
     // Create three text files and add them to output directory
-    ofstream alpha, numeric, other;
-    alpha.open("Output/Alphabet.txt");
-    numeric.open("Output/Number.txt");
-    other.open("Output/Other.txt");
+    fstream alpha, numeric, other;
+    alpha.open("Output/Alphabet.txt", ios_base::out);
+    numeric.open("Output/Number.txt", ios_base::out);
+    other.open("Output/Other.txt", ios_base::out);
 
     // Start a line variable
     string line;
@@ -58,7 +58,7 @@ int main(int argc, char const *argv[])
             {
                 numeric << line[i];
             }
-            else
+            else if (isalpha(line[i]) == 0 && isdigit(line[i]) == 0 && isspace(line[i]) == 0)
             {
                 other << line[i];
             }
@@ -72,5 +72,57 @@ int main(int argc, char const *argv[])
     file.close();
 
     cout << "Output Generated Successfully" << endl;
+
+    // Opening files as input
+    alpha.open("Output/Alphabet.txt", ios_base::in);
+    numeric.open("Output/Number.txt", ios_base::in);
+    other.open("Output/Other.txt", ios_base::in);
+
+    // Displaying letters
+    cout << "Letters: ";
+    bool letters = false, numbers = false, others = false;
+    while(getline(alpha, line))
+    {
+        cout << line;
+        letters = true;
+    }
+    cout << endl;
+    
+    // If no letters found, tell user
+    if(!letters)
+    {
+        cout << "No Letters found" << endl;
+    }
+
+    // Displaying Numbers
+    cout << "Numbers: ";
+    while (getline(numeric, line))
+    {
+        cout << line;
+        numbers = true;
+    }
+    cout << endl;
+
+    // If no numbers found, Tell user
+    if(!numbers)
+    {
+        cout << "No Numbers found" << endl;
+    }
+
+    // Displaying other symbols
+    cout << "Others: ";
+    while (getline(other, line))
+    {
+        cout << line;
+        others = true;
+    }
+    cout << endl;
+
+    //If no other found, Tell user.
+    if(!others)
+    {
+        cout << "No Symbols found" << endl;
+    }
+    
     return 0;
 }
