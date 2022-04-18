@@ -124,5 +124,8 @@ int main(int argc, char const *argv[])
         cout << "No Symbols found" << endl;
     }
     
+    alpha.close();
+    numeric.close();
+    other.close();
     return 0;
 }
