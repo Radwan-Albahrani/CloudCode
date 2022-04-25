@@ -859,7 +859,10 @@ void removeStudent(Student students[], int index)
 // Search for and select one students from the database
 int searchStudents(const Student students[])
 {
+    // Check if there are students in Array
     int size = students[0].ArraySize;
+
+    // If there are no students, return -1
     if(size == 0)
     {
         cout << "No students in Database." << endl;
@@ -1028,7 +1031,6 @@ int searchCourse(const Grades courses[], int size)
             cout << "ID is not on the list. Please check again\n";
             id = getInt("\nPlease Select by ID: ");
         } 
-        return index[id];
         return index[id];
     }
 
