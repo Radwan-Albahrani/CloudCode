@@ -608,18 +608,18 @@ void selectStudent(Student students[])
         while(true)
         {
             // Present Menu
-            cout << "============================== " << students[index].Name << " is Selected ==============================" << endl;
+            string topOfMenu = "============================== " + students[index].Name + " is Selected ==============================";
+            cout << topOfMenu << endl;
             cout << "1 - Add Courses to Student.\n";
             cout << "2 - Remove Course from Student.\n";
             cout << "3 - Edit a course for Student.\n";
             cout << "4 - Delete Student.\n";
             cout << "5 - Back to main Menu.\n";
-            cout << "============================================";
-            for(int i = 0; i < students[index].Name.length(); i++)
+            for(int i = 0; i < topOfMenu.length(); i++)
             {
                 cout << "=";
             }
-            cout << "==============================\n"; 
+            cout << endl; 
             
             // Get the user's Choice
             int choice = getInt("\nPlease Select an Item from the menu: ");
@@ -1047,7 +1047,7 @@ void displayAllStudents(Student students[])
         return;
     }
     // Display all students in Tabular Format
-    cout << "Displaying Students: " << endl;
+    cout << "============================== Displaying Students ===================================" << endl;
     cout << setw(20) << left << "Name";
     cout << setw(30) << "Courses";
     cout << setw(10) << "Percent";
@@ -1081,8 +1081,9 @@ void displayAllStudents(Student students[])
            cout << endl 
            << setw(20) << left << "" 
            << setw(10) << "GPA: " << students[i].GPA 
-           << endl << "=================================================================" << endl;
+           << endl << "======================================================================================" << endl;
         }
+    cout << "\n\n";
 }
 
 // Get Int from user
