@@ -16,7 +16,6 @@ using namespace std;
 // Global Variable
 bool isModified = false;
 
-
 // Function to generate a timestamp
 string timeStamp()
 {
@@ -424,12 +423,14 @@ void GenerateReport(const Student students[])
 // Main menu
 void mainMenu()
 {
+    cout << "============================== Student Database -- Menu ==============================" << endl;
     cout << "1 - Add Student." << endl;
     cout << "2 - Remove Student." << endl;
     cout << "3 - Select Student." << endl;
     cout << "4 - Display All Students." << endl;
     cout << "5 - Generate Report." << endl;
     cout << "6 - Exit." << endl;
+    cout << "======================================================================================" << endl;
 }
 
 // Function to add students
@@ -607,14 +608,21 @@ void selectStudent(Student students[])
         while(true)
         {
             // Present Menu
+            cout << "============================== " << students[index].Name << " is Selected ==============================" << endl;
             cout << "1 - Add Courses to Student.\n";
             cout << "2 - Remove Course from Student.\n";
             cout << "3 - Edit a course for Student.\n";
             cout << "4 - Delete Student.\n";
-            cout << "5 - Back to main Menu.";
+            cout << "5 - Back to main Menu.\n";
+            cout << "============================================";
+            for(int i = 0; i < students[index].Name.length(); i++)
+            {
+                cout << "=";
+            }
+            cout << "==============================\n"; 
             
             // Get the user's Choice
-            int choice = getInt("\n\nPlease Select an Item from the menu: ");
+            int choice = getInt("\nPlease Select an Item from the menu: ");
 
             // If 1, add a course to the students
             if(choice == 1)
