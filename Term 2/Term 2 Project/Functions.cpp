@@ -444,11 +444,13 @@ void mainMenu()
 // Function to add students
 void addStudent(Student students[])
 {
+    // Check if students are at max number
     if(students[0].ArraySize == 100)
     {
         cout << "Database Limit has been reached. Cannot add any more students\n";
         return;
     }
+    
     // Get students name
     string name;
     cout << "Please enter students name: ";
