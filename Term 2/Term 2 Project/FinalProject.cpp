@@ -1,6 +1,7 @@
 // Including
 #include <iostream>
-#include <filesystem>
+#include <algorithm>
+#include <direct.h>
 
 // Namespace
 using namespace std;
@@ -8,16 +9,12 @@ using namespace std;
 // Prototypes and structs
 #include "Prototypes.h"
 
-// Filesystem Namespace
-namespace fs = std::filesystem;
-
 // Main function
 int main(int argc, char const *argv[])
 {
     // Create a directory
-    fs::create_directory("Data Files") ? cout << "Created directory - Data Files\n\n" << endl : cout << "Directory Already Exists, Loaded Data\n\n" << endl;
-;
-
+    _mkdir("Data Files") ? cout << "Directory Already Exists - Data Loaded.\n\n" << endl : cout << "Created directory - Data Files\n\n" << endl;
+    
     // Create a students Array.
     Student students[100];
     
