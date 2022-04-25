@@ -144,7 +144,15 @@ void ReadStudentsFromFile(Student students[])
     file.open("Data Files/Data.txt");
     if(!file.is_open())
     {
+        // Create new Data file
         ofstream file("Data Files/Data.txt");
+        string timeString = timeStamp();
+
+        // Add time to start of data
+        file << "[" << timeString << "]" << endl;
+        file.close();
+
+        // Exit Function
         return;
     }
 
