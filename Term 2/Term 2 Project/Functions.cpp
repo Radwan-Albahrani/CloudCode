@@ -438,7 +438,7 @@ void mainMenu()
     cout << "4 - Display All Students." << endl;
     cout << "5 - Generate Report." << endl;
     cout << "6 - Exit." << endl;
-    cout << "======================================================================================" << endl;
+    cout << "======================================================================================";
 }
 
 // Function to add students
@@ -465,13 +465,13 @@ void addStudent(Student students[])
     }
 
     // Add name to database
-    students[0].ArraySize++;
     int size = students[0].ArraySize;
-    students[size - 1].Name = name;
+    students[0].ArraySize++;
+    students[size].Name = name;
 
     // Start student with no courses and no GPA
-    students[size - 1].courseSize = 0;
-    students[size - 1].GPA = 0;
+    students[size].courseSize = 0;
+    students[size].GPA = 0;
     
     // Make modified true
     isModified = true;
@@ -495,11 +495,11 @@ void addStudent(Student students[])
             {
 
                 // Add Course
-                addCourse(students, i, size - 1);
+                addCourse(students, i, size);
             }
             
             cout << "Courses Added Successfully.\n\n";
-            CalculateGPA(students[size - 1]);
+            CalculateGPA(students[size]);
             break;
         }
         
@@ -521,8 +521,8 @@ void addStudent(Student students[])
     string addTime = timeStamp();
     stringstream buffer;
     buffer << "New Student Added.\n";
-    buffer << "\tStudent Name: " << students[size - 1].Name << endl;
-    buffer << "\tCourses added: " << students[size - 1].courseSize;
+    buffer << "\tStudent Name: " << students[size].Name << endl;
+    buffer << "\tCourses added: " << students[size].courseSize;
 
     string log = buffer.str();
     createLog(log);
@@ -620,11 +620,12 @@ void selectStudent(Student students[])
             // Present Menu
             string topOfMenu = "============================== " + students[index].Name + " is Selected ==============================";
             cout << topOfMenu << endl;
-            cout << "1 - Add Courses to Student.\n";
-            cout << "2 - Remove Course from Student.\n";
-            cout << "3 - Edit a course for Student.\n";
-            cout << "4 - Delete Student.\n";
-            cout << "5 - Back to main Menu.\n";
+            cout << "1 - Display Student Information\n";
+            cout << "2 - Add Courses to Student.\n";
+            cout << "3 - Remove Course from Student.\n";
+            cout << "4 - Edit a course for Student.\n";
+            cout << "5 - Delete Student.\n";
+            cout << "6 - Back to main Menu.\n";
             for(int i = 0; i < topOfMenu.length(); i++)
             {
                 cout << "=";
@@ -634,8 +635,14 @@ void selectStudent(Student students[])
             // Get the user's Choice
             int choice = getInt("\nPlease Select an Item from the menu: ");
 
-            // If 1, add a course to the students
+            // Display student Information
             if(choice == 1)
+            {
+                displayStudent(students[index]);
+            }
+            
+            // Add a course to the students
+            else if(choice == 2)
             {
                 // Get Old Course size
                 int CourseSize = students[index].courseSize;
@@ -671,7 +678,7 @@ void selectStudent(Student students[])
             }
 
             // Remove a course
-            else if(choice == 2)
+            else if(choice == 3)
             {
                 // Get course index
                 int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
@@ -706,7 +713,7 @@ void selectStudent(Student students[])
             }
 
             // Modify Course
-            else if(choice == 3)
+            else if(choice == 4)
             {
                 // Get course
                 int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
@@ -723,12 +730,21 @@ void selectStudent(Student students[])
                     while(true)
                     {                     
                         // Present new menu
-                        
+                        string topOfMenu = "============================= " + students[index].courses[courseIndex].CourseName + " is selected =============================";
+                        cout << topOfMenu << endl;
+
+                        // Present current course information
+                        cout << "Percentage: " << students[index].courses[courseIndex].percentage << endl;
+                        cout << "Credit: " << students[index].courses[courseIndex].credit << endl << endl; 
                         cout << "1 - Change Course Name.\n";
                         cout << "2 - Change Course Grade.\n";
                         cout << "3 - Change Course Credit.\n";
-                        cout << "4 - Return to Previous Menu\n\n";
-
+                        cout << "4 - Return to Previous Menu\n";
+                        for(int i = 0; i < topOfMenu.length(); i++)
+                        {
+                            cout << "=";
+                        }
+                        cout << "\n\n";
                         int choice = getInt("Please Select Item From Menu: ");
                         // Change course name
                         if(choice == 1)
@@ -802,14 +818,14 @@ void selectStudent(Student students[])
             }
 
             // If user wants to delete students
-            else if(choice == 4)
+            else if(choice == 5)
             {
                 removeStudent(students, index);
                 break;
             }
 
             // Else if user wants to return to main menu
-            else if(choice == 5)
+            else if(choice == 6)
             {
                 break;
             }
@@ -1098,6 +1114,49 @@ void displayAllStudents(Student students[])
     cout << "\n\n";
 }
 
+// Display Selected Student
+void displayStudent(Student student)
+{
+    // Display students in Tabular Format
+    cout << "============================== Displaying Students ===================================" << endl;
+    cout << setw(20) << left << "Name";
+    cout << setw(30) << "Courses";
+    cout << setw(10) << "Percent";
+    cout << setw(5) << "Credit"; 
+    cout << endl;
+
+    // Display Student name in appropriate column
+    cout << setw(20) << student.Name;
+    if(student.courseSize == 0)
+    {
+        cout << setw(30) << "Student Has No courses Added";
+    }
+
+    // Loop through all the courses the student has and display them
+    for(int j = 0; j < student.courseSize; j++)
+    {
+        if(j == 0)
+        {
+            cout << setw(30) << student.courses[j].CourseName 
+            << setw(10) << student.courses[j].percentage 
+            << setw(5) << student.courses[j].credit << endl;
+        }
+        else
+        {
+            cout << setw(20)  << left << "" 
+            << setw(30) << student.courses[j].CourseName 
+            << setw(10) << student.courses[j].percentage 
+            << setw(5) << student.courses[j].credit << endl;
+        }
+    }
+    cout << endl 
+    << setw(20) << left << "" 
+    << setw(10) << "GPA: " << student.GPA 
+    << endl << "======================================================================================" << endl;
+        
+    cout << "\n\n";
+}
+
 // Get Int from user
 int getInt(string Prompt)
 {
@@ -1162,4 +1221,9 @@ double getDouble(string Prompt)
 bool compareByCharacter(const Student &a, const Student &b)
 {
     return tolower(a.Name[0]) < tolower(b.Name[0]);
+}
+
+bool compareByCharacterCourses(const Grades &a, const Grades &b)
+{
+    return tolower(a.CourseName[0]) < tolower(b.CourseName[0]);
 }
