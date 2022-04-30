@@ -59,7 +59,14 @@ int main(int argc, char const *argv[])
         // If user choses to exit the program
         if(choice == 6)
         {
-            // Quickly Sort by First letter.
+
+            // Sort courses in all students by first letter
+            for(int i = 0; i < students[0].ArraySize; i++)
+            {
+                sort(students[i].courses, students[i].courses + students[i].courseSize, compareByCharacterCourses);
+            }
+
+            // Quickly Sort Studnets by First letter.
             sort(students, students + students[0].ArraySize, compareByCharacter);
 
             // Update database if necessary
