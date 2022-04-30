@@ -48,12 +48,16 @@ void selectStudent(Student students[]);
 void CalculateGPA(Student& student);
 // Display all saved students
 void displayAllStudents(Student students[]);
+// Display Selected Student
+void displayStudent(Student student);
 // Find students in the database
 int searchStudents(const Student students[]);
 // Function to search courses
 int searchCourse(const Grades grades[], int size);
-// Sorting Function
+// Sorting Function for students
 bool compareByCharacter(const Student &a, const Student &b);
+// Sorting function for courses
+bool compareByCharacterCourses(const Grades &a, const Grades &b);
 // Function to write new data after program ends
 void WriteStudentsToFile(Student students[], bool modified);
 // Function to generate a report when the user asks
