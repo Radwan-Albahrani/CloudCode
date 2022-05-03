@@ -13,7 +13,7 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
     // Create a directory
-    _mkdir("Data Files") ? cout << "Directory Already Exists - Data Loaded.\n\n" << endl : cout << "Created directory - Data Files\n\n" << endl;
+    _mkdir("Data Files") ? cout << "Directory Already Exists - Data Loaded.\n" << endl : cout << "Created directory - Data Files\n" << endl;
     
     // Create a students Array.
     Student students[100];

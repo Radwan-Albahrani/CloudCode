@@ -28,8 +28,9 @@ string timeStamp()
 	curr_tm = localtime(&curr_time);
     
     // Convert time to string
-	strftime(timeString, 50, "%m/%d/%Y | %I:%M:%S%p", curr_tm);
+	strftime(timeString, 50, "[%m/%d/%Y | %I:%M:%S%p]", curr_tm);
 
+    // Return timestring
     return timeString;
 }
 
@@ -40,7 +41,8 @@ void CalculateGPA(Student& student)
     double totalpoints = 0;
     int totalhours = 0;
     int size = student.courseSize;
-    // Check if students has courses, and if not, break and return
+    
+    // Check if students has courses, and if not, Tell user, then return
     if(size == 0)
     {
         cout << "Student: " << student.Name << " has no courses added." << endl;
@@ -95,17 +97,25 @@ void CalculateGPA(Student& student)
 
     }
 
-    // Round the GPA to 3 decimal places
+    // Calculate GPA
     double GPA = totalpoints/totalhours;
+
+    // Start a temporary String Stream
     stringstream tmp;
+
+    // Set precision to 3 decimal places and add in GPA
     tmp << setprecision(3) << fixed << GPA;
+
+    // Convert string to double and put it in GPA
     GPA = stod(tmp.str());
+
+    // Reset Temporary string stream
     tmp.str(string());
 
     // Add GPA to students
     student.GPA = GPA;
 
-    // Making a log string
+    // Make a log of the added GPA
     string log;
     ostringstream buffer;
     buffer << "GPA for " << student.Name << " Has been added. Value: " << student.GPA;
@@ -122,10 +132,10 @@ void createLog(string log)
     // Get timestamp
     string timeString = timeStamp();
     
-    // Adding Log
+    // Adding Log to the logfile
     ofstream logfile;
     logfile.open("Data Files/Log.txt", ios_base::app);
-    logfile << "[" << timeString << "] " << "- " << log << endl;
+    logfile << timeString << " - " << log << endl;
     logfile.close(); 
 }
 
@@ -137,11 +147,12 @@ void ReadStudentsFromFile(Student students[])
 
     // Variables to store line and file
     string line;
-    string avoid;
     ifstream file;
 
     // Opening Data file
     file.open("Data Files/Data.txt");
+
+    // If the data file doesn't exist yet
     if(!file.is_open())
     {
         // Create new Data file
@@ -149,7 +160,7 @@ void ReadStudentsFromFile(Student students[])
         string timeString = timeStamp();
 
         // Add time to start of data
-        file << "[" << timeString << "]" << endl;
+        file << timeString << endl;
         file.close();
 
         // Exit Function
@@ -166,98 +177,130 @@ void ReadStudentsFromFile(Student students[])
     file.clear();
     file.seekg(0);
     
-    // Skip first line
+    // Skip first line (Contains timestamp)
     getline(file, line);
     numberOfLines--;
 
-    // Start the courses counter
-    int counter = 1;
-
-    // Start a students counter
-    int studentCounter = students[0].ArraySize;
-
-    // Loop through the lines
-    for(int i = 1; i <= numberOfLines; i++)
+    // Try Reading Data
+    try
     {
-        // If the line is even, we need to get all the courses registered
-        if(i % 2 == 0)
+        // Start the courses counter
+        int counter = 1;
+
+        // Loop through the lines
+        for(int i = 1; i <= numberOfLines; i++)
         {
-            // Get the entire line
-            getline(file, line);
-            if (line == "")
+            // If the line is even, we need to get all the courses registered
+            if(i % 2 == 0)
             {
-                cout << "Data contains Student with no courses." << endl;
+                // Start a students Index at the current student
+                int StudentIndex = students[0].ArraySize - 1;
+
+                // Get the entire line
+                getline(file, line);
+
+                // If the line is empty, this student has no courses
+                if (line == "")
+                {
+                    cout << "Data contains Student with no courses." << endl;
+                }
+
+                // If the line is not empty
+                else
+                {
+                    // Put the line in a stream
+                    stringstream sstr(line);
+                    
+                    // Start with zero, no courses
+                    int size = 0;
+                    
+                    // While there is still stuff in the stream
+                    while(sstr.good())
+                    {
+                        // Create a substring up until the first comma
+                        string substr;
+                        getline(sstr, substr, ',');
+
+                        // If the substring is empty, Break
+                        if(substr == "")
+                        {
+                            continue;
+                        }
+
+                        // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
+                        if(counter == 1)
+                        {
+                            // Add A course to the student
+                            students[StudentIndex].courseSize++;
+                            students[StudentIndex].courses[size].CourseName = substr;
+                            
+                            // Increment counter by one
+                            counter++;
+                        }
+
+                        // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
+                        else if(counter == 2)
+                        {
+                            // Add the percentage as a double to the student
+                            students[StudentIndex].courses[size].percentage = stod(substr);
+
+                            // Increment counter by one
+                            counter++;
+                        }
+                        // If the courses counter is 3, We are at credit score
+                        else if(counter == 3)
+                        {
+                            // add credit score to proper place
+                            students[StudentIndex].courses[size].credit = stoi(substr);
+
+                            // Reset courses counter
+                            counter = 1;
+
+                            // Increment size by 1
+                            size++;
+                        }
+                        
+                        // if courses counter is 0, add one and reloop
+                        else
+                        {
+                            counter++;
+                        }
+
+                    }
+                    
+                }
+
+                // Logging that data has been read
+                string log;
+                stringstream buffer;
+                buffer << "Read Data for students. This includes: \n" 
+                << "\tName: " << students[StudentIndex].Name 
+                << "\n\tCourses added: " << students[StudentIndex].courseSize;
+                log = buffer.str();
+                createLog(log);
+
+                // Calculate GPA of current students
+                CalculateGPA(students[StudentIndex]);
+                
             }
             else
             {
-                // Put the line in a stream
-                stringstream sstr(line);
-                
-                int size = 0;
-                // While there is still stuff in the stream
-                while(sstr.good())
-                {
-                    // Create a substring up until the first comma
-                    string substr;
-                    getline(sstr, substr, ',');
-
-                    // If the courses counter is 1, we are at the course name. Get it and add it to the proper place
-                    if(counter == 1)
-                    {
-                        // Add A course to the student
-                        students[studentCounter].courseSize++;
-                        size = students[studentCounter].courseSize - 1;
-                        students[studentCounter].courses[size].CourseName = substr;
-                        counter++;
-                    }
-
-                    // If the course counter is 2, we are at the percentage. Get it and add it to the proper place
-                    else if(counter == 2)
-                    {
-                        students[studentCounter].courses[size].percentage = stod(substr);
-                        counter++;
-                    }
-                    // If the courses counter is 3, We are at credit score
-                    else
-                    {
-                        // add credit score to proper place
-                        students[studentCounter].courses[size].credit = stoi(substr);
-
-                        // Reset courses counter
-                        counter = 1;
-                    }
-
-                }
-                
+                // add name to that students and increment array size
+                getline(file, line);
+                students[students[0].ArraySize++].Name = line;
             }
-
-            // Logging that data has been read
-            string log;
-            stringstream buffer;
-            buffer << "Read Data for students. This includes: \n" 
-            << "\tName: " << students[studentCounter].Name 
-            << "\n\tCourses added: " << students[studentCounter].courseSize;
-            log = buffer.str();
-            createLog(log);
-
-            // Calculate GPA of current students
-            CalculateGPA(students[studentCounter]);
-
-            // Add one to the students counter.
-            studentCounter++;
-            
-            
-        }
-        else
-        {
-            // Creating new students
-            students[0].ArraySize++;
-
-            // add name to that students
-            getline(file, line);
-            students[studentCounter].Name = line;
         }
     }
+
+    // Give the user an Error message if Data has a formatting Issue
+    catch(const std::exception& e)
+    {
+        cout << "Error occurred while reading Data. Please make sure Data is formatted Correctly.\n\n";
+        cout << "Format: \n\nStudent Name\nCourse Name1,Grade1,Credit1,Course Name2,Grade2,Credit2....CreditN\nStudent Name\n....\n\nCourse lines can be left EMPTY if student has no courses Added.\n\nExiting Program...\n";
+        exit(1);
+    }
+    
+    
 }
 
 // Function to Write new data after program ends
@@ -269,23 +312,25 @@ void WriteStudentsToFile(Student students[], bool modified)
     {
         return;
     }
+    
     // Start file in output stream and get data
     ofstream file;
     file.open("Data Files/Data.txt");
 
+    // Get a time string
     string timeString = timeStamp();
 
     // Add time to start of database
-    file << "[" << timeString << "]" << endl;
+    file << timeString << endl;
 
 
     // Loop through students
     for(int i = 0; i < students[0].ArraySize; i++)
     {
-        // Loop through elements of students
+        // Loop through students as if they consist of two lines
         for(int j = 0; j < 2; j++)
         {
-            // if we at element 1, we are at name. Put the name in file and start a new line. Go to next loop
+            // if we at line 1, we are at name. Put the name in file and start a new line. Go to next loop
             if(j == 0)
             {
                 string name = students[i].Name;
@@ -299,11 +344,12 @@ void WriteStudentsToFile(Student students[], bool modified)
                 // Start a new loop for the number of course of the current students
                 for(int k = 0; k < students[i].courseSize; k++)
                 {
-                    // comma to be added at the end of each credit except the last one
+                    // Add comma after credit except if its the last one
                     if(k > 0 && k != students[i].courseSize)
                     {
                         file << ",";
                     }
+
                     // Add course name then a comma
                     file << students[i].courses[k].CourseName << ",";
                     
@@ -313,13 +359,11 @@ void WriteStudentsToFile(Student students[], bool modified)
                     // Add course credit
                     file << students[i].courses[k].credit;
                 }
+                
                 // New line after the loop for the next students
                 file << endl;
             }
         }
-
-        
-
     }
 }
 
@@ -342,52 +386,22 @@ void GenerateReport(const Student students[])
 
     // string to store each line
     string line;
-    // Loop through number of lines to count
-    int numberOfLines = 0;
-    while(getline(file, line))
-    {
-       numberOfLines++;
-    }
 
     // Preparing report Variables
     int modifications = 0;
     int additions = 0;
     int deletions = 0;
 
-    // Go back to beginning of file
-    file.clear();
-    file.seekg(0);
-
     // Start a loop through the file
-    for (size_t i = 0; i < numberOfLines; i++)
+    while(getline(file, line))
     {
-        // Get the line
-        getline(file, line);
-
-        // If the line includes read, Skip two lines and continue loop
-        if(line.find("Read") != string::npos)
-        {
-            continue;
-        }
-
-        // If the line includes GPA, skip this loop (GPA is added Automatically and is not considered a modification)
-        else if(line.find("GPA") != string::npos)
-        {
-            continue;
-        }
-
         // if added is in log, add additions
-        else if(line.find("Added") != string::npos)
+        if(line.find("Added") != string::npos)
         {
             additions++;
             continue;
         }
-        else if(line[0] == '\t')
-        {
-            getline(file, line);
-            numberOfLines--;
-            continue;
-        }
+        
         // If deleted is detected, add deletions
         else if(line.find("Deleted") != string::npos)
         {
@@ -395,15 +409,11 @@ void GenerateReport(const Student students[])
             continue;
         }
 
-        // Else if modified was detected, add another modification
+        // if modified was detected, add modification
         else if(line.find("Modified") != string::npos)
         {
             modifications++;
             continue;
-        }
-        else
-        {
-            cout << "This type of log was not accounted for: " << line << endl;
         }
     }
     
@@ -415,15 +425,15 @@ void GenerateReport(const Student students[])
     report.open("Data Files/Statistical Report.txt");
 
     // Timestamp String
-    string reportTime = "[" + timeStamp() + "]";
+    string reportTime = timeStamp();
 
     // Add information to the report in Tabular Format
     report << setw(40) << left << "Report Generated at:"  << setw(5) << reportTime << endl;
     report << "===================================================================" << endl;
     report << setw(40) << left << "Number of records: " << setw(5) << students[0].ArraySize << endl;
     report << setw(40) << left << "Date since last Update: " << setw(5) << dateModified << endl;
-    report << setw(40) << left << "Number of additions in total: " << setw(5) << additions << endl;
-    report << setw(40) << left << "Number of deletions in total: " << setw(5) << deletions << endl;
+    report << setw(40) << left << "Number of Additions in total: " << setw(5) << additions << endl;
+    report << setw(40) << left << "Number of Deletions in total: " << setw(5) << deletions << endl;
     report << setw(40) << left << "Number of Modifications in total: " << setw(5) << modifications << endl;
 
 }
@@ -465,13 +475,13 @@ void addStudent(Student students[])
     }
 
     // Add name to database
-    int size = students[0].ArraySize;
+    int Index = students[0].ArraySize;
     students[0].ArraySize++;
-    students[size].Name = name;
+    students[Index].Name = name;
 
     // Start student with no courses and no GPA
-    students[size].courseSize = 0;
-    students[size].GPA = 0;
+    students[Index].courseSize = 0;
+    students[Index].GPA = 0;
     
     // Make modified true
     isModified = true;
@@ -493,13 +503,15 @@ void addStudent(Student students[])
             // Loop through to add courses to a students
             for (size_t i = 0; i < counter; i++)
             {
-
                 // Add Course
-                addCourse(students, i, size);
+                addCourse(students, i, Index);
             }
             
+            // Tell User that the courses were added
             cout << "Courses Added Successfully.\n\n";
-            CalculateGPA(students[size]);
+
+            // Calculate the GPA of that student
+            CalculateGPA(students[Index]);
             break;
         }
         
@@ -517,12 +529,11 @@ void addStudent(Student students[])
         }
     }
     
-    // Logging Added students
-    string addTime = timeStamp();
+    // Logging Adding Student
     stringstream buffer;
     buffer << "New Student Added.\n";
-    buffer << "\tStudent Name: " << students[size].Name << endl;
-    buffer << "\tCourses added: " << students[size].courseSize;
+    buffer << "\tStudent Name: " << students[Index].Name << endl;
+    buffer << "\tCourses added: " << students[Index].courseSize;
 
     string log = buffer.str();
     createLog(log);
@@ -537,12 +548,12 @@ void addCourse(Student students[], int i, int index)
         cout << "Limit for this student has been reached. Cannot add any more courses\n";
         return;
     }
-    // Create new course
-    students[index].courseSize++;
-    int size = students[index].courseSize;
 
     // Get course index
-    int courseIndex = size - 1;
+    int courseIndex = students[index].courseSize;
+
+    // Add one Course
+    students[index].courseSize++;
 
     // Get Course Name
     string CourseName;
@@ -569,8 +580,7 @@ void addCourse(Student students[], int i, int index)
     buffer.str(string());
 
     // Ask for Percentage
-    double percentage = -1;
-    percentage = getDouble(prompt);
+    double percentage = getDouble(prompt);
 
     // Make sure percentage is within Appropriate Range
     while(percentage < 0 || percentage > 100)
@@ -579,10 +589,12 @@ void addCourse(Student students[], int i, int index)
         percentage = getDouble(prompt);
     }
    
-    // Get credits
+    // Prepare prompt for credit
     buffer.str(string());
     buffer << "Enter course number " << i + 1 << "'s Credit Hours: ";
     prompt = buffer.str();
+
+    // Ask for credit
     int credit = getInt(prompt);
 
     // Double Check Credits
@@ -591,8 +603,6 @@ void addCourse(Student students[], int i, int index)
         cout << "Input must be between 0 and 10" << endl;
         credit = getDouble(prompt);
     }
-
-    
 
     // Add name
     students[index].courses[courseIndex].CourseName = CourseName;
@@ -632,7 +642,7 @@ void selectStudent(Student students[])
             }
             cout << endl; 
             
-            // Get the user's Choice
+            // Get the user's Choice from the menu
             int choice = getInt("\nPlease Select an Item from the menu: ");
 
             // Display student Information
@@ -653,7 +663,6 @@ void selectStudent(Student students[])
                 // Loop through and add courses
                 for(int i = 0; i < counter; i++)
                 {
-
                     // Add Course
                     addCourse(students, i, index);
                 }
@@ -666,7 +675,7 @@ void selectStudent(Student students[])
                 // Mark the file as modified
                 isModified = true;
 
-                // Mark Record as modified
+                // Mark Record as modified and log it
                 stringstream buffer;
                 string log;
                 buffer << "Modified Courses for Student: " << students[index].Name;
@@ -674,7 +683,6 @@ void selectStudent(Student students[])
                 buffer << " - New Course Total: " << students[index].courseSize;
                 log = buffer.str();
                 createLog(log);
-
             }
 
             // Remove a course
@@ -684,7 +692,9 @@ void selectStudent(Student students[])
                 int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
                 if(courseIndex != -1)
                 {
+                    // Get Size of courses
                     int size = students[index].courseSize;
+                    
                     // Get course name and save it
                     string courseName = students[index].courses[courseIndex].CourseName;
 
@@ -694,6 +704,8 @@ void selectStudent(Student students[])
                         students[index].courses[j] = students[index].courses[j+1];
                     }
                     students[index].courseSize = size - 1;
+
+                    // Tell User
                     cout << "Course Deleted Successfully.\n";
 
                     // Mark File as modified
@@ -703,7 +715,6 @@ void selectStudent(Student students[])
                     stringstream buffer;
                     string log;
                     buffer << "Course deleted Successfully. Course name: " << courseName << ". Student Data has been Modified.";  
-                    
                     log = buffer.str();
                     createLog(log);
 
@@ -717,7 +728,8 @@ void selectStudent(Student students[])
             {
                 // Get course
                 int courseIndex = searchCourse(students[index].courses, students[index].courseSize);
-                
+
+                // If Found
                 if(courseIndex != -1)
                 {
                     // Make Sure Course is modified
@@ -778,13 +790,17 @@ void selectStudent(Student students[])
                         }
                         // Change course Credit
                         else if(choice == 3)
-                        {
+                        {   
+                            // Get Credit
                             int credit = getInt("Please Enter New Credit Hours: ");
+
+                            // Validate it
                             while(credit < 0 || credit > 10)
                             {
                                 cout << "Input must be between 0 and 10" << endl;
                                 credit = getInt("Please Enter New Credit Hours: ");
                             }
+
                             // Update and Notify
                             students[index].courses[courseIndex].credit = credit;
                             isModified = true;
@@ -805,7 +821,7 @@ void selectStudent(Student students[])
                         }
                     }
 
-                    // If the course was modified, Log it and Update it
+                    // If the course was modified, Log it.
                     if(courseModified)
                     {
                         stringstream buffer;
@@ -817,7 +833,7 @@ void selectStudent(Student students[])
                 }
             }
 
-            // If user wants to delete students
+            // If user wants to delete selected student
             else if(choice == 5)
             {
                 removeStudent(students, index);
@@ -842,12 +858,14 @@ void selectStudent(Student students[])
 // Function to remove Students
 void removeStudent(Student students[], int index)
 {
+    // If index was not passed (Default value), Search for student they want to delete
     if(index == -2)
     {
         index = searchStudents(students);
     }
     
 
+    // If index was given
     if(index != -1)
     {
         // Log it before deleting it
@@ -864,6 +882,7 @@ void removeStudent(Student students[], int index)
             students[j] = students[j+1];
         }
         students[0].ArraySize = size;
+        
         // Inform user
         cout << "Student has been deleted successfully" << endl;
         
@@ -957,13 +976,16 @@ int searchStudents(const Student students[])
             // Seperator
             cout << "=============================================================" << endl;
         }
+
         // Ask user for ID and validate it
         int id = getInt("\nPlease Select by ID: ");
         while(id > index.size() - 1 || id < 0)
         {
             cout << "ID is not on the list. Please check again\n";
             id = getInt("\nPlease Select by ID: ");
-        } 
+        }
+
+        // Return selected Index 
         return index[id];
     }
 
@@ -974,6 +996,7 @@ int searchStudents(const Student students[])
         return -1;
     }
 
+    // If everything happened to find the student and they were still not found, return -1
     return -1;
 
 }
@@ -1057,6 +1080,7 @@ int searchCourse(const Grades courses[], int size)
         return -1;
     }
 
+    // If all else fails, return -1. Course was not found
     return -1;
 
 
@@ -1074,43 +1098,66 @@ void displayAllStudents(Student students[])
         cout << "No Students in Database\n";
         return;
     }
+    
     // Display all students in Tabular Format
     cout << "============================== Displaying Students ===================================" << endl;
-    cout << setw(20) << left << "Name";
-    cout << setw(30) << "Courses";
-    cout << setw(10) << "Percent";
-    cout << setw(5) << "Credit"; 
-    cout << endl;
 
         // Loop through all students and Display appropriate information in appropriate Columns
         for(int i = 0; i < size; i++)
         {
+            // Display Column Names
+            cout << setw(20) << left << "Name";
+            cout << setw(30) << "Courses";
+            cout << setw(10) << "Percent";
+            cout << setw(5) << "Credit"; 
+            cout << endl;
+
+            // Display name in first column
             cout << setw(20) << students[i].Name;
+
+            // If student has no courses, display that
             if(students[i].courseSize == 0)
             {
                 cout << setw(30) << "Student Has No courses Added";
             }
+
+            // IF student does have courses
             for(int j = 0; j < students[i].courseSize; j++)
             {
+                // If first loop, display course information normally
                 if(j == 0)
                 {
                     cout << setw(30) << students[i].courses[j].CourseName 
                     << setw(10) << students[i].courses[j].percentage 
                     << setw(5) << students[i].courses[j].credit << endl;
                 }
+
+                // Else
                 else
-                {
-                    cout << setw(20)  << left << "" 
+                {   
+                    // Add placeholder instead of student name
+                    cout << setw(20)  << left << ""
+
+                    // Display Courses 
                     << setw(30) << students[i].courses[j].CourseName 
                     << setw(10) << students[i].courses[j].percentage 
                     << setw(5) << students[i].courses[j].credit << endl;
                 }
             }
-           cout << endl 
-           << setw(20) << left << "" 
-           << setw(10) << "GPA: " << students[i].GPA 
-           << endl << "======================================================================================" << endl;
+            // End line
+            cout << endl 
+            
+            // Place holder instead of name
+            << setw(20) << left << ""
+
+            // Display GPA 
+            << setw(10) << "GPA: " << students[i].GPA 
+
+            // End Section
+            << endl << "======================================================================================" << endl;
         }
+    
+    // End line twice
     cout << "\n\n";
 }
 
@@ -1135,6 +1182,7 @@ void displayStudent(Student student)
     // Loop through all the courses the student has and display them
     for(int j = 0; j < student.courseSize; j++)
     {
+        // Display Courses Appropriately.
         if(j == 0)
         {
             cout << setw(30) << student.courses[j].CourseName 
@@ -1149,7 +1197,10 @@ void displayStudent(Student student)
             << setw(5) << student.courses[j].credit << endl;
         }
     }
+    // End line
     cout << endl 
+
+    // Display GPA appropriately
     << setw(20) << left << "" 
     << setw(10) << "GPA: " << student.GPA 
     << endl << "======================================================================================" << endl;
@@ -1167,24 +1218,33 @@ int getInt(string Prompt)
     // Start a loop
     while(true)
     {
-         // Try except to see if can get a number
+        // Try except to see if can get a number
         try
         {
-            cout << Prompt; 
+            // Display Prompt
+            cout << Prompt;
+
+            // Get User input as string 
             getline(cin, choice);
+
+            // Convert String to Integer
             realChoice = stoi(choice);
+
+            // Exit loop
             break;
             
         }
 
-        // Yell user it must be a number
+        // Tell user it must be a number
         catch(const std::exception& e)
         {
             cout << "Input must be a number. Try again.\n";
             continue;
         }
     }
-   return realChoice;
+    
+    // Return User input
+    return realChoice;
 }
 
 // Get Double
@@ -1197,24 +1257,31 @@ double getDouble(string Prompt)
     // Start a loop
     while(true)
     {
-         // Try except to see if can get a number
+        // Try except to see if can get a number
         try
         {
-            cout << Prompt; 
+            // Display Prompt
+            cout << Prompt;
+
+            // Get input as string 
             getline(cin, choice);
+
+            // Convert to double
             realChoice = stod(choice);
             break;
             
         }
 
-        // Yell user it must be a number
+        // Tell user it must be a number
         catch(const std::exception& e)
         {
             cout << "Input must be a number. Try again.\n";
             continue;
         }
     }
-   return realChoice;
+
+    // Return converted input
+    return realChoice;
 }
 
 // Sorting Function
@@ -1223,6 +1290,7 @@ bool compareByCharacter(const Student &a, const Student &b)
     return tolower(a.Name[0]) < tolower(b.Name[0]);
 }
 
+// Sorting function for courses
 bool compareByCharacterCourses(const Grades &a, const Grades &b)
 {
     return tolower(a.CourseName[0]) < tolower(b.CourseName[0]);
