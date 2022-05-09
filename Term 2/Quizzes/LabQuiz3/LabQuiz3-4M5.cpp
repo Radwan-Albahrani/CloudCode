@@ -39,27 +39,19 @@ int main(int argc, char const *argv[])
         // If the line does have it
         if(foundResult != string::npos)
         {
-            // Start a data string
-            string Data;
-
-            // Extract index number from this data by skipping the TestID itself and the = and the quote
-            for(int i = foundResult + 8, j = 0; i < foundResult + 8 + 4; i++, j++)
-            {
-                Data += line[i];
-            }
+            // Extract the necessary substring
+            string Data = line.substr(foundResult + 8, foundResult + 8 + 4);
             
-            // Extract current tag
-            string firstTag;
-            for(int i = 0; i < foundResult - 1; i++)
-            {
-                firstTag += line[i];
-            }
+            // Convert that number to an integer and store it in output data
+            outputData << stoi(Data) << endl;
 
+            // Extract current tag
+            string firstTag = line.substr(0, foundResult - 1);
+            
             // Add Tag to Tags file
             tags << firstTag  << ">" << endl;
 
-            // Convert that number to an integer and store it in output data
-            outputData << stoi(Data) << endl;
+
 
             // Loop for the next four lines
             for(int i = 0; i < 4; i++)
@@ -82,26 +74,17 @@ int main(int argc, char const *argv[])
                 // Prepare string for tag
                 string tag;
 
-                // Loop from 0 to start index and add that to tags
-                for(int j = 0; j < startindex + 1; j++)
-                {
-                    tag += line[j];
-                }
+                // Extract Tag
+                tag += line.substr(0, startindex + 1);
 
-                // Loop from start index to end index and add that to current data
-                for(int j = startindex + 1; j < endIndex; j++)
-                {
-                    currentData += line[j];
-                }
+                // Extract current data
+                currentData += line.substr(startindex + 1, endIndex - 1);
 
                 // Put current data in output with a /t
-                outputData << "\t" << currentData << endl;
+                outputData << " " << currentData << endl;
 
-                // Loop from endindex to end of line and add that to tags
-                for(int j = endIndex; j < endofline + 1; j++)
-                {
-                    tag += line[j];
-                }
+                // Extract ending tag
+                tag += line.substr(endIndex, endofline);
 
                 // write it in tags file
                 tags << tag << endl;
@@ -133,7 +116,7 @@ int main(int argc, char const *argv[])
     while(getline(inputData, Test))
     {
         // If the start of the Test string is not a tab
-        if(Test[0] != '\t')
+        if(Test[0] != ' ')
         {
             // Prepare a result integer
             int Result;
