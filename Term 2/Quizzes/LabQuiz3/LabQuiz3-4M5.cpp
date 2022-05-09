@@ -77,8 +77,8 @@ int main(int argc, char const *argv[])
                 // Extract Tag
                 tag += line.substr(0, startindex + 1);
 
-                // Extract current data
-                currentData += line.substr(startindex + 1, endIndex - 1);
+                // Get data Substring
+                currentData += line.substr(startindex + 1, endIndex - startindex - 1);
 
                 // Put current data in output with a /t
                 outputData << " " << currentData << endl;
