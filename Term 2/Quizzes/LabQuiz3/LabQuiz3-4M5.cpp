@@ -84,7 +84,7 @@ int main(int argc, char const *argv[])
                 outputData << " " << currentData << endl;
 
                 // Extract ending tag
-                tag += line.substr(endIndex, endofline);
+                tag += line.substr(endIndex, endofline - endIndex + 1);
 
                 // write it in tags file
                 tags << tag << endl;
