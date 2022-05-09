@@ -42,11 +42,21 @@ int main(int argc, char const *argv[])
             // Start a data string
             string Data;
 
-            // Extract index number from this data.
-            for(int i = foundResult + 8, j = 0; i < foundResult + 5 + 7; i++, j++)
+            // Extract index number from this data by skipping the TestID itself and the = and the quote
+            for(int i = foundResult + 8, j = 0; i < foundResult + 8 + 4; i++, j++)
             {
                 Data += line[i];
             }
+            
+            // Extract current tag
+            string firstTag;
+            for(int i = 0; i < foundResult - 1; i++)
+            {
+                firstTag += line[i];
+            }
+
+            // Add Tag to Tags file
+            tags << firstTag  << ">" << endl;
 
             // Convert that number to an integer and store it in output data
             outputData << stoi(Data) << endl;
