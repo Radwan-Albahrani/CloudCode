@@ -260,7 +260,7 @@ void ReadStudentsFromFile(Student students[])
                             size++;
                         }
                         
-                        // if courses counter is 0, add one and reloop
+                        // if courses counter is 0, add one and re-loop
                         else
                         {
                             counter++;

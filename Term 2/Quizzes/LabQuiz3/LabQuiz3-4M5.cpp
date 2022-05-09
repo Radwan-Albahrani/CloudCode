@@ -108,7 +108,7 @@ int main(int argc, char const *argv[])
             }
         }
 
-        // If it doesnt have a testID, just add it as is to tags
+        // If it doesn't have a testID, just add it as is to tags
         else
         {
             tags << line << endl;
