@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
     // Print out failing students
     for(int i = 0; i < arraySize; i++)
     {
-        if(grades[i] <= average)
+        if(grades[i] < average)
         {
             cout << names[i] << " Needs extra courses. Grade: " << grades[i] << endl;
         }
