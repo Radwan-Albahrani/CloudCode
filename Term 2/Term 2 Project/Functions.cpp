@@ -1068,7 +1068,7 @@ int searchCourse(const Grades courses[], int size)
         }
         cout << "==================================================================================" << endl;
         // Ask user for ID and validate it
-        int id = getInt("Please Select by ID: ");
+        int id = getInt("\nPlease Select by ID: ");
 
         // Validate ID
         while(id > index.size() - 1 || id < 0)
