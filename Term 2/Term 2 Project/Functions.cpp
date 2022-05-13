@@ -942,6 +942,7 @@ int searchStudents(const Student students[])
     {   
         // Display all found students
         cout << "Student Found. Please Select Student from the list: " << endl;
+        cout << "=============================================================" << endl;
         cout << setw(5) << left << "ID";
         cout << setw(20) << "Name";
         cout << setw(10) << "Courses";
@@ -1049,17 +1050,23 @@ int searchCourse(const Grades courses[], int size)
     {   
         // Display all found courses
         cout << "Course Found. Please Select Student from the list: " << endl;
+        cout << "==================================================================================" << endl;
         cout << setw(5) << left << "ID";
-        cout << setw(10) << "Courses";
+        cout << setw(20) << "Courses";
+        cout << setw(20) << "Percentage";
+        cout << setw(10) << "Credit";
         cout << endl;
 
         // Loop through index and display all found courses
         for(int i = 0; i < index.size(); i++)
         {
             cout << setw(5) << left << i;
-            cout << setw(10) << courses[index[i]].CourseName;
+            cout << setw(20) << courses[index[i]].CourseName;
+            cout << setw(20) << courses[index[i]].percentage;
+            cout << setw(10) << courses[index[i]].credit;
             cout << endl;
         }
+        cout << "==================================================================================" << endl;
         // Ask user for ID and validate it
         int id = getInt("Please Select by ID: ");
 
