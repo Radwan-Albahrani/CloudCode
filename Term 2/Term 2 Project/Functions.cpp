@@ -287,6 +287,11 @@ void ReadStudentsFromFile(Student students[])
                 // add name to that students and increment array size
                 getline(file, line);
                 students[students[0].ArraySize++].Name = line;
+
+                // Add the ID to that student and
+                getline(file, line);
+                students[students[0].ArraySize-1].StudentID = line;
+                numberOfLines--;
             }
         }
     }
@@ -334,6 +339,7 @@ void WriteStudentsToFile(Student students[], bool modified)
             {
                 string name = students[i].Name;
                 file << name << endl;
+                file << students[i].StudentID << endl;
                 continue;
             }
             
@@ -446,7 +452,8 @@ void mainMenu()
     cout << "3 - Select Student." << endl;
     cout << "4 - Display All Students." << endl;
     cout << "5 - Generate Report." << endl;
-    cout << "6 - Exit." << endl;
+    cout << "6 - Sorting Options." << endl;
+    cout << "7 - Exit." << endl;
     cout << "======================================================================================";
 }
 
@@ -477,6 +484,10 @@ void addStudent(Student students[])
     int Index = students[0].ArraySize;
     students[0].ArraySize++;
     students[Index].Name = name;
+    
+    // Create Student ID for student.
+    students[Index].StudentID = createStudentID();
+    cout << "ID generated: " << students[Index].StudentID << endl;
 
     // Start student with no courses and no GPA
     students[Index].courseSize = 0;
@@ -874,6 +885,49 @@ void removeStudent(Student students[], int index)
         log = buffer.str();
         createLog(log);
 
+        // open Archive as append
+        ofstream archive;
+        archive.open("Data Files/Archive.txt", ios_base::app);
+
+        // Loop through students as if they consist of two lines
+        for(int j = 0; j < 2; j++)
+        {
+            // if we at line 1, we are at name. Put the name in file and start a new line. Go to next loop
+            if(j == 0)
+            {
+                string name = students[index].Name;
+                archive << name << endl;
+                archive << students[index].StudentID << endl;
+                continue;
+            }
+            
+            // If we are at courses
+            if(j == 1)
+            {
+                // Start a new loop for the number of course of the current students
+                for(int k = 0; k < students[index].courseSize; k++)
+                {
+                    // Add comma after credit except if its the last one
+                    if(k > 0 && k != students[index].courseSize)
+                    {
+                        archive << ",";
+                    }
+
+                    // Add course name then a comma
+                    archive << students[index].courses[k].CourseName << ",";
+                    
+                    // Add course percentage then add a comma
+                    archive << students[index].courses[k].percentage << ",";
+
+                    // Add course credit
+                    archive << students[index].courses[k].credit;
+                }
+                
+                // New line after the loop for the next students
+                archive << endl;
+            }
+        }
+
         // Delete students in that index spot
         int size = students[0].ArraySize - 1;
         for (int j = index; j < size; j++)
@@ -902,38 +956,100 @@ int searchStudents(const Student students[])
         cout << "No students in Database." << endl;
         return -1;
     }
-
-    // Ask for students name
-    string name;
-    cout << "Please enter Student name: ";
-    getline(cin, name);
-
-    // Loop through array of students and find all cases of students with that name
+    // Prepare index
     vector<int> index;
-    for (size_t i = 0; i < size; i++)
+    cout << "========================== Select Student ==========================" << endl;
+    cout << "1 - Search by name." << endl;
+    cout << "2 - Search by ID." << endl;
+    cout << "3 - Back to Main Menu." << endl;
+    cout << "====================================================================" << endl;
+    // Ask if user wants to search by name or ID
+    int choice = getInt("\nPlease Enter your Choice: ");
+    while(1)
     {
-        // Get the name of the current student 
-        string currentName = students[i].Name;
-
-        // Lowercase the whole name
-        for (size_t j = 0; j < currentName.length(); j++)
+        if(choice == 1)
         {
-            currentName[j] = tolower(currentName[j]);
+            // Ask for students name
+            string name;
+            cout << "Please enter Student name: ";
+            getline(cin, name);
+
+            // Loop through array of students and find all cases of students with that name
+            
+            for (size_t i = 0; i < size; i++)
+            {
+                // Get the name of the current student 
+                string currentName = students[i].Name;
+
+                // Lowercase the whole name
+                for (size_t j = 0; j < currentName.length(); j++)
+                {
+                    currentName[j] = tolower(currentName[j]);
+                }
+
+                // Lower case the name of the search query
+                for (size_t j = 0; j < name.length(); j++)
+                {
+                    name[j] = tolower(name[j]);
+                }
+                
+                // Find any occurrence of the search query in the current student name
+                size_t found = currentName.find(name);
+
+                // If found, add its index over to the index vector
+                if(found != string::npos)
+                {
+                    index.push_back(i);
+                }
+            }
+            break;
         }
 
-        // Lower case the name of the search query
-        for (size_t j = 0; j < name.length(); j++)
+        else if(choice == 2)
         {
-            name[j] = tolower(name[j]);
-        }
-        
-        // Find any occurrence of the search query in the current student name
-        size_t found = currentName.find(name);
+            // Ask for students name
+            string studentID;
+            cout << "Please enter Student ID: ";
+            getline(cin, studentID);
 
-        // If found, add its index over to the index vector
-        if(found != string::npos)
+            // Loop through array of students and find all cases of students with that name
+            
+            for (size_t i = 0; i < size; i++)
+            {
+                // Get the name of the current student 
+                string currentID = students[i].StudentID;
+
+                // Lowercase the whole name
+                for (size_t j = 0; j < currentID.length(); j++)
+                {
+                    currentID[j] = tolower(currentID[j]);
+                }
+
+                // Lower case the name of the search query
+                for (size_t j = 0; j < studentID.length(); j++)
+                {
+                    studentID[j] = tolower(studentID[j]);
+                }
+                
+                // Find any occurrence of the search query in the current student name
+                size_t found = currentID.find(studentID);
+
+                // If found, add its index over to the index vector
+                if(found != string::npos)
+                {
+                    index.push_back(i);
+                }
+            }
+            break;
+        }
+    
+        else if (choice == 3)
         {
-            index.push_back(i);
+            return -1;
+        }
+        else
+        {
+            cout << "Choice not Valid. Try again.\n";
         }
     }
 
@@ -942,8 +1058,9 @@ int searchStudents(const Student students[])
     {   
         // Display all found students
         cout << "Student Found. Please Select Student from the list: " << endl;
-        cout << "=============================================================" << endl;
-        cout << setw(5) << left << "ID";
+        cout << "================================================================================================" << endl;
+        cout << setw(20) << left << "Temporary ID";
+        cout << setw(15) << "ID";
         cout << setw(20) << "Name";
         cout << setw(10) << "Courses";
         cout << endl;
@@ -951,7 +1068,8 @@ int searchStudents(const Student students[])
         // Loop through index and display all found students
         for(int i = 0; i < index.size(); i++)
         {
-            cout << setw(5) << left << i;
+            cout << setw(20) << left << i + 1;
+            cout << setw(15) << students[index[i]].StudentID;
             cout << setw(20) << students[index[i]].Name;
             
             // If student has no courses, Tell user then go to new line
@@ -969,20 +1087,22 @@ int searchStudents(const Student students[])
                 }
                 else
                 {
-                    cout << setw(5) << left << "" << setw(20) << "" << setw(10) << students[index[i]].courses[j].CourseName << endl;
+                    cout << setw(20) << left << "" << setw(15) << "" << setw(20) << "" << setw(10) << students[index[i]].courses[j].CourseName << endl;
                 }
             }
 
             // Seperator
-            cout << "=============================================================" << endl;
+            cout << "================================================================================================" << endl;
         }
 
         // Ask user for ID and validate it
-        int id = getInt("\nPlease Select by ID: ");
+        int id = getInt("\nPlease Select by Temporary ID: ");
+        id--;
         while(id > index.size() - 1 || id < 0)
         {
             cout << "ID is not on the list. Please check again\n";
             id = getInt("\nPlease Select by ID: ");
+            id--;
         }
 
         // Return selected Index 
@@ -1060,7 +1180,7 @@ int searchCourse(const Grades courses[], int size)
         // Loop through index and display all found courses
         for(int i = 0; i < index.size(); i++)
         {
-            cout << setw(5) << left << i;
+            cout << setw(5) << left << i + 1;
             cout << setw(20) << courses[index[i]].CourseName;
             cout << setw(20) << courses[index[i]].percentage;
             cout << setw(10) << courses[index[i]].credit;
@@ -1069,12 +1189,14 @@ int searchCourse(const Grades courses[], int size)
         cout << "==================================================================================" << endl;
         // Ask user for ID and validate it
         int id = getInt("\nPlease Select by ID: ");
+        id--;
 
         // Validate ID
         while(id > index.size() - 1 || id < 0)
         {
             cout << "ID is not on the list. Please check again\n";
             id = getInt("\nPlease Select by ID: ");
+            id--;
         } 
         return index[id];
     }
@@ -1112,13 +1234,15 @@ void displayAllStudents(Student students[])
         for(int i = 0; i < size; i++)
         {
             // Display Column Names
-            cout << setw(20) << left << "Name";
+            cout << setw(15) << left << "ID";
+            cout << setw(20) << "Name";
             cout << setw(30) << "Courses";
             cout << setw(10) << "Percent";
             cout << setw(5) << "Credit"; 
             cout << endl;
 
-            // Display name in first column
+            // Display name in first and second columns
+            cout << setw(15) << left << students[i].StudentID;
             cout << setw(20) << students[i].Name;
 
             // If student has no courses, display that
@@ -1141,8 +1265,8 @@ void displayAllStudents(Student students[])
                 // Else
                 else
                 {   
-                    // Add placeholder instead of student name
-                    cout << setw(20)  << left << ""
+                    // Add placeholder instead of student name and ID
+                    cout << setw(15)  << left << "" << setw(20) << ""
 
                     // Display Courses 
                     << setw(30) << students[i].courses[j].CourseName 
@@ -1153,8 +1277,8 @@ void displayAllStudents(Student students[])
             // End line
             cout << endl 
             
-            // Place holder instead of name
-            << setw(20) << left << ""
+            // Place holder instead of name and ID
+            << setw(15)  << left << "" << setw(20) << ""
 
             // Display GPA 
             << setw(10) << "GPA: " << students[i].GPA 
@@ -1172,14 +1296,18 @@ void displayStudent(Student student)
 {
     // Display students in Tabular Format
     cout << "============================== Displaying Students ===================================" << endl;
-    cout << setw(20) << left << "Name";
+    cout << setw(15) << left << "ID";
+    cout << setw(20) << "Name";
     cout << setw(30) << "Courses";
     cout << setw(10) << "Percent";
     cout << setw(5) << "Credit"; 
     cout << endl;
 
-    // Display Student name in appropriate column
+    // Display Student name and ID in appropriate column
+    cout << setw(15) << student.StudentID;
     cout << setw(20) << student.Name;
+    
+    // If no courses, say that
     if(student.courseSize == 0)
     {
         cout << setw(30) << "Student Has No courses Added";
@@ -1197,7 +1325,7 @@ void displayStudent(Student student)
         }
         else
         {
-            cout << setw(20)  << left << "" 
+            cout << setw(15) << left << "" << setw(20) << ""
             << setw(30) << student.courses[j].CourseName 
             << setw(10) << student.courses[j].percentage 
             << setw(5) << student.courses[j].credit << endl;
@@ -1207,11 +1335,66 @@ void displayStudent(Student student)
     cout << endl 
 
     // Display GPA appropriately
-    << setw(20) << left << "" 
+    << setw(15) << left << "" << setw(20) << ""
     << setw(10) << "GPA: " << student.GPA 
     << endl << "======================================================================================" << endl;
         
     cout << "\n\n";
+}
+
+// Create Student ID
+string createStudentID()
+{
+
+    // Get the Start of the ID as the tens digits of the year
+    cout << "Generating ID: " << endl;
+    string currentTime = timeStamp();
+    size_t found = currentTime.find("|");
+    string ID = currentTime.substr(found - 3, 2);
+    
+    // Open a new input file
+    ifstream file;
+
+    // Open logs
+    file.open("Data Files/Log.txt");
+
+    // string to store each line
+    string line;
+    
+    // Preparing Size
+    int size = 0;
+
+    // Start a loop through the file
+    while(getline(file, line))
+    {
+        // if added is in log, add additions
+        if(line.find("Added") != string::npos)
+        {
+            size++;
+            continue;
+        }
+    }
+    
+    // Add the size to the ID
+    stringstream sizestring;
+    sizestring << size;
+    string sizeasstring = sizestring.str();
+
+    // Calculate appropriate number of zeros
+    int maxZeros = 10 - (ID.length() + sizeasstring.length());
+
+    // Add zeros in between the start and the size
+    for(int i = 0; i < maxZeros; i++)
+    {
+        ID += "0";
+    }
+
+    // Add size
+    ID += sizeasstring;
+
+    // Return the ID
+    return ID;
+
 }
 
 // Get Int from user
@@ -1290,10 +1473,97 @@ double getDouble(string Prompt)
     return realChoice;
 }
 
-// Sorting Function
+// Sorting Options
+void sortingOptions(Student students[])
+{
+    int choice = 0;
+    int size = students[0].ArraySize;
+    while (choice != 4)
+    {
+        
+        // Present Sorting Menu
+        cout << "============================== Sorting Options ==============================" << endl;
+        cout << "1 - By Name" << endl;
+        cout << "2 - By GPA" << endl;
+        cout << "3 - By ID" << endl;
+        cout << "4 - Back to Main Menu: " << endl;
+        cout << "=============================================================================" << endl;
+        
+        // Get Sorting Option
+        choice = getInt("\nSelect an Option: ");
+        int second = 0;
+
+        // Check user choice
+        switch (choice)
+        {
+            // Sort by name
+            case 1:
+                sort(students, students + students[0].ArraySize, compareByCharacter);
+                cout << "Sorted Alphabetically by student name" << endl;
+                choice = 4;
+                break;
+
+            // Sort by GPA but check if ascending or descending
+            case 2:
+                second = getInt("Type 1 for ascending, 2 for Descending: ");
+                switch (second)
+                {
+                    case 1:
+                        sort(students, students + students[0].ArraySize, compareByGPAAscending);
+                        cout << "Sorted Students by GPA: Ascending" << endl;
+                        choice = 4;
+                        break;
+                    case 2:
+                        sort(students, students + students[0].ArraySize, compareByGPADescending);
+                        cout << "Sorted Students by GPA: Descending" << endl;
+                        choice = 4;
+                        break;
+                    default:
+                        cout << "Not an Option. Please Try again." << endl;
+                        break;
+                }
+                break;
+            // Sort by ID
+            case 3:
+                sort(students, students + students[0].ArraySize, compareByID);
+                cout << "Sorted by Student ID" << endl;
+                choice = 4;
+                break;
+            
+            // Return to main Menu
+            case 4:
+                break;
+            default:
+                cout << "Not a choice. Try again" << endl;
+                break;
+        }
+    }
+
+    students[0].ArraySize = size;
+}
+
+// Sorting Function by student first letter
 bool compareByCharacter(const Student &a, const Student &b)
 {
     return tolower(a.Name[0]) < tolower(b.Name[0]);
+}
+
+// Sorting function by GPA ascending
+bool compareByGPAAscending(const Student &a, const Student &b)
+{
+    return a.GPA < b.GPA;
+}
+
+// Compare by ID
+bool compareByID(const Student &a, const Student &b)
+{
+    return (stod(a.StudentID) < stod(b.StudentID));
+}
+
+// Sorting function by GPA ascending
+bool compareByGPADescending(const Student &a, const Student &b)
+{
+    return a.GPA > b.GPA;
 }
 
 // Sorting function for courses

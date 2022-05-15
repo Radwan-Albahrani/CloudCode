@@ -30,8 +30,14 @@ int main(int argc, char const *argv[])
             sort(students[i].courses, students[i].courses + students[i].courseSize, compareByCharacterCourses);
         }
 
-        // Quickly Sort Studnets by First letter.
-        sort(students, students + students[0].ArraySize, compareByCharacter);
+        // If data is modified, update database immediately
+        if(isModified)
+        {
+            // Update database if necessary
+            WriteStudentsToFile(students, isModified);
+            isModified = false;
+        }
+
 
         // Display menu
         mainMenu();
@@ -59,6 +65,9 @@ int main(int argc, char const *argv[])
                 cout << "Report Generated Successfully\n";
                 break;
             case 6:
+                sortingOptions(students);
+                break;
+            case 7:
                 break;
             default:
                 cout << "Selected choice not in menu. Please select from the menu" << endl;
@@ -66,12 +75,8 @@ int main(int argc, char const *argv[])
         }
 
         // If user choses to exit the program
-        if(choice == 6)
+        if(choice == 7)
         {
-
-            // Update database if necessary
-            WriteStudentsToFile(students, isModified);
-
             // Exit Program
             break;
         }
