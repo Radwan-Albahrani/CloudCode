@@ -1101,7 +1101,7 @@ int searchStudents(const Student students[])
         while(id > index.size() - 1 || id < 0)
         {
             cout << "ID is not on the list. Please check again\n";
-            id = getInt("\nPlease Select by ID: ");
+            id = getInt("\nPlease Select by Temporary ID: ");
             id--;
         }
 
@@ -1505,7 +1505,7 @@ void sortingOptions(Student students[])
 
             // Sort by GPA but check if ascending or descending
             case 2:
-                second = getInt("Type 1 for ascending, 2 for Descending: ");
+                second = getInt("Type 1 for Ascending, 2 for Descending: ");
                 switch (second)
                 {
                     case 1:
