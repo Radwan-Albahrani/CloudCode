@@ -31,7 +31,8 @@
 *.exe
 *.out
 *.app
+*.class
+*.vscode
 
-
-/.vscode/tasks.json
-/.vscode/launch.json
+/2022-2023/Term 1/Lab 1/.vscode
+/2022-2023/Term 1/Lab 1/bin
