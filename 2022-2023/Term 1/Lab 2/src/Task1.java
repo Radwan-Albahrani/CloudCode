@@ -26,7 +26,7 @@ public class Task1
         for (int i = 0; i < 3; i++)
         {
             min = Math.min(min, nums[i]);
-            max = Math.max(min, nums[i]);
+            max = Math.max(max, nums[i]);
         }
 
         // Print out everything
