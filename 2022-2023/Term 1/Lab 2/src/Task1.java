@@ -25,14 +25,8 @@ public class Task1
         int max = -999999999;
         for (int i = 0; i < 3; i++)
         {
-            if (nums[i] < min)
-            {
-                min = nums[i];
-            }
-            if (nums[i] > max)
-            {
-                max = nums[i];
-            }
+            min = Math.min(min, nums[i]);
+            max = Math.max(min, nums[i]);
         }
 
         // Print out everything
