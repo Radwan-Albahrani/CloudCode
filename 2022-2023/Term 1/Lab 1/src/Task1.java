@@ -1,7 +1,8 @@
 import java.util.Scanner;
-public class Task1 
+
+public class Task1
 {
-    public static void main(String[] args) throws Exception 
+    public static void main(String[] args) throws Exception
     {
         Scanner input = new Scanner(System.in);
         int BirthYear, CurrentYear = 2022, age;

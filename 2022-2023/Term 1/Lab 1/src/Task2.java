@@ -1,8 +1,8 @@
 import java.util.Scanner;
 
-public class Task2 
+public class Task2
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         // Create Input Object
         Scanner input = new Scanner(System.in);
@@ -15,7 +15,7 @@ public class Task2
         Fehren = input.nextFloat();
 
         // Calculate Celsius
-        Celsius = (5.0f/9.0f) * (Fehren - 32.0f);
+        Celsius = (5.0f / 9.0f) * (Fehren - 32.0f);
 
         // Print Celsius Temperature
         System.out.printf("Temperature in Fehrennheit: %.1f\n YTemperature in Celsius: %.2f", Fehren, Celsius);
