@@ -8,17 +8,17 @@ public class Task2
         Scanner input = new Scanner(System.in);
 
         // Create Variables
-        float Fehren, Celsius;
+        float Fahren, Celsius;
 
         // Get Input from user
         System.out.print("Please Input Temperature in Fahrenheit: ");
-        Fehren = input.nextFloat();
+        Fahren = input.nextFloat();
 
         // Calculate Celsius
-        Celsius = (5.0f / 9.0f) * (Fehren - 32.0f);
+        Celsius = (5.0f / 9.0f) * (Fahren - 32.0f);
 
         // Print Celsius Temperature
-        System.out.printf("Temperature in Fahrenheit: %.1f\n YTemperature in Celsius: %.2f", Fehren, Celsius);
+        System.out.printf("Temperature in Fahrenheit: %.1f\n YTemperature in Celsius: %.2f", Fahren, Celsius);
         input.close();
     }
 }
