@@ -18,7 +18,7 @@ public class Task2
         Celsius = (5.0f / 9.0f) * (Fehren - 32.0f);
 
         // Print Celsius Temperature
-        System.out.printf("Temperature in Fehrennheit: %.1f\n YTemperature in Celsius: %.2f", Fehren, Celsius);
+        System.out.printf("Temperature in Fahrenheit: %.1f\n YTemperature in Celsius: %.2f", Fehren, Celsius);
         input.close();
     }
 }
