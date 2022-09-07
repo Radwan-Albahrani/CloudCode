@@ -23,7 +23,11 @@ public class Task3
         // Find longest name
         for (int i = 0; i < names.length; i++)
         {
-           max = Math.max(names[i].length(), max);
+            if (names[i].length() > max)
+            {
+                index = i;
+                max = names[i].length();
+            }
         }
 
         // Print longest name and number of characters
