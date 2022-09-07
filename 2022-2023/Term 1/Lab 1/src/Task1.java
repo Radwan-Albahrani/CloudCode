@@ -1,3 +1,4 @@
+import java.util.Calendar;
 import java.util.Scanner;
 public class Task1
 {
@@ -7,7 +8,7 @@ public class Task1
         Scanner input = new Scanner(System.in);
 
         // Prepare Variables
-        int BirthYear, CurrentYear = 2022, age;
+        int BirthYear, CurrentYear = Calendar.getInstance().get(Calendar.YEAR), age;
 
         // Get Birth Year and make sure its not bigger than current year
         do
