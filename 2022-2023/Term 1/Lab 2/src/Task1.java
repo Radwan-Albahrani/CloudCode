@@ -30,8 +30,7 @@ public class Task1
         }
 
         // Print out everything
-        System.out.printf("The Average of the values is %.2f\nThe Maximum number is: %d\nThe Minimum Number is: %d",
-                Average, max, min);
+        System.out.printf("The Average of the values is %.2f\nThe Maximum number is: %d\nThe Minimum Number is: %d", Average, max, min);
         input.close();
 
     }
