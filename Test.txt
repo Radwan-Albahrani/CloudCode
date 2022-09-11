@@ -1,7 +1,4 @@
 Hello
 Create a merge conflict
 Hello
-<<<<<<< HEAD
 whatsup
-=======
->>>>>>> a900cfb0c945c19ffd42a2a66581d046a9b9a942
