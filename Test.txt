@@ -1,7 +1,0 @@
-Hello
-Testing Merge Conflicts
-Editing This Line
-Different Edit to test Conflicts
-Create a merge conflict
-Hello
-whatsup
