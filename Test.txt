@@ -1,5 +1,5 @@
 Hello
-Testing Merge Conflicts
+Different Edit to test Conflicts
 Create a merge conflict
 Hello
 whatsup
