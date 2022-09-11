@@ -1,2 +1,4 @@
 Hello
 Create a merge conflict
+Hello
+whatsup
