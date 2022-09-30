@@ -1,9 +1,11 @@
 import java.util.Scanner;
 
-public class Quiz1 {
+public class Quiz1
+{
 
     // Function to generate shape
-    public static String generateStr() {
+    public static String generateStr()
+    {
         // Get height of stairs
         Scanner input = new Scanner(System.in);
         System.out.print("Enter the height of the stairs: ");
@@ -16,14 +18,17 @@ public class Quiz1 {
         int columns = 1;
 
         // Loop through rows
-        for (int i = 0; i < rows; i++) {
+        for (int i = 0; i < rows; i++)
+        {
             // Print required stars for this column
-            for (int j = 0; j < columns; j++) {
+            for (int j = 0; j < columns; j++)
+            {
                 shape += "*";
             }
 
             // Add spaces for counting
-            for (int j = 0; j < rows - columns; j++) {
+            for (int j = 0; j < rows - columns; j++)
+            {
                 shape += " ";
             }
 
@@ -38,14 +43,17 @@ public class Quiz1 {
     }
 
     // Function to count spaces in said shape
-    public static int CountSpaces(String str) {
+    public static int CountSpaces(String str)
+    {
         // Start a counter
         int spaceCounter = 0;
 
         // Loop through string
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); i++)
+        {
             // If character is a space, add to counter
-            if (str.charAt(i) == ' ') {
+            if (str.charAt(i) == ' ')
+            {
                 spaceCounter++;
             }
         }
@@ -53,7 +61,8 @@ public class Quiz1 {
         return spaceCounter;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception
+    {
         // Get shape
         String shape = generateStr();
 

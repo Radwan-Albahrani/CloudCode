@@ -6,6 +6,7 @@ public class Task2
     {
         // Create Input Object
         Scanner input = new Scanner(System.in);
+        int[] array = {1, 2, 3, 4};
 
         // Create Variables
         float Fahren, Celsius;

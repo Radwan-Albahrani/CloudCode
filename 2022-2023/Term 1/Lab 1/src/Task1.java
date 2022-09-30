@@ -1,5 +1,6 @@
 import java.util.Calendar;
 import java.util.Scanner;
+
 public class Task1
 {
     public static void main(String[] args) throws Exception
@@ -15,11 +16,11 @@ public class Task1
         {
             System.out.print("Please Enter your Birth Year: ");
             birthYear = input.nextInt();
-            if(birthYear > currentYear)
+            if (birthYear > currentYear)
             {
                 System.out.println("Birth Year cannot be bigger than current Year.");
             }
-        } while(birthYear > currentYear);
+        } while (birthYear > currentYear);
 
         // Calculate age
         age = currentYear - birthYear;

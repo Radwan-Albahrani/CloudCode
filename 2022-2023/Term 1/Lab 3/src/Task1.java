@@ -17,7 +17,8 @@ public class Task1
                 System.out.print("Enter number of students: ");
                 SIZE = in.nextInt();
                 parsed = true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.out.println("Must be a Number.");
                 in.nextLine(); // Clear Buffer
@@ -44,7 +45,8 @@ public class Task1
                     System.out.print("Enter the grade of " + names[i] + ": ");
                     grades[i] = in.nextInt();
                     parsed = true;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     System.out.println("Must be a number");
                     in.nextLine(); // Clear Buffer
