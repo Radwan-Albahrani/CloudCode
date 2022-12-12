@@ -3,20 +3,17 @@ import java.util.*;
 
 public class CourseRecordTest
 {
-
-    /**
-     * @param args the command line arguments
-     */
-
+    // Level counters and input
     static int level1_Counter = 0, level2_Counter = 0, level3_Counter = 0;
     static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args)
     {
-        // TODO code application logic here
+        // Creating an array of courses
         CourseRecord[][] courseRecords = new CourseRecord[3][5];
         int choice = menu();
 
+        // Menu and validation
         while (choice != 4)
         {
             switch (choice)
@@ -39,6 +36,7 @@ public class CourseRecordTest
 
     }
 
+    // Menu
     static int menu()
     {
 
@@ -51,11 +49,14 @@ public class CourseRecordTest
         return input.nextInt();
     }
 
+    // Function to add course
     static void addCourse(CourseRecord[][] courseRecords)
     {
 
+        // Start with level 0
         int level = 0;
 
+        // Try to get level from user and make sure its int and within parameters
         try
         {
 
@@ -67,6 +68,7 @@ public class CourseRecordTest
 
             if (level < 1 || level > 3)
                 System.out.println("Available levels are: 1, 2 and 3");
+            // If level is valid, get course info
             else
             {
                 System.out.print("Please enter course information:\nCourse Code: ");
@@ -97,9 +99,10 @@ public class CourseRecordTest
                         courseRecords[2][level3_Counter++] = new CourseRecord(code, title, name, room, hours);
                         break;
 
-                } // switch
-            } // else
-        } // try
+                }
+            }
+        }
+        // Catch any exception in getting course info
         catch (ArrayIndexOutOfBoundsException ex)
         {
             System.err.println("Level [" + level + "] has 5 courses."
@@ -118,52 +121,50 @@ public class CourseRecordTest
 
     }
 
+    // Function to print all available courses
     static void printCourseRecords(CourseRecord[][] courseRecords)
     {
         System.out.println("Printing All Available Courses");
         System.out.println("--------------------------------");
 
-        // printing level1 courses:
-        if (level1_Counter != 0)
+        // Loop through all levels
+        for (int i = 0; i < courseRecords.length; i++)
         {
-            System.out.println("Available Courses in Level 1:");
-
-            for (int col = 0; col < level1_Counter; col++)
+            // Loop through all courses in each level
+            for (int j = 0; j < courseRecords[i].length; j++)
             {
-                System.out.println("Course " + (col + 1) + ":\n" + courseRecords[0][col].toString() + "\n");
-            }
-        }
-
-        // printing level2 courses:
-        if (level2_Counter != 0)
-        {
-            System.out.println("Available Courses in Level 2:");
-            for (int col = 0; col < level2_Counter; col++)
-            {
-                System.out.println("Course " + (col + 1) + ":\n" + courseRecords[1][col].toString() + "\n");
-            }
-        }
-        // printing level3 courses:
-        if (level3_Counter != 0)
-        {
-            System.out.println("Available Courses in Level 3:");
-            for (int col = 0; col < level3_Counter; col++)
-            {
-                System.out.println("Course " + (col + 1) + ":\n" + courseRecords[2][col].toString() + "\n");
+                try
+                {
+                    // Print course info
+                    System.out.println(courseRecords[i][j].toString());
+                }
+                catch (NullPointerException ex)
+                {
+                    System.err.printf("No more courses found in level: %d\n", i + 1);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    System.err.println(ex.getMessage());
+                }
             }
         }
     }
 
+    // Search courses
     static void searchCourseRecord(CourseRecord[][] courseRecords)
     {
+        // Initialize
         int level = 0;
         System.out.println("Updating Course Record");
         System.out.println("-------------------------");
+
+        // Try to get level from user and make sure its int and within parameters
         try
         {
             System.out.print("Please enter level number: ");
             level = input.nextInt() - 1;
-            if (level < 0 || level > 2)
+            if (level < 1 || level > 3)
             {
                 System.out.println("Available levels are: 1, 2 and 3");
                 return;
@@ -185,15 +186,20 @@ public class CourseRecordTest
             System.err.println(ex.getMessage());
             input.nextLine();
         }
+
+        // Check if there are any courses in this level
         if (courseRecords[level][0] == null)
         {
             System.out.println("No courses available to search");
             return;
         }
+
+        // Get course code from user
         System.out.print("Please enter course code: ");
         String code = input.next();
         int found = -1;
 
+        // Loop through all courses in this level and find the course
         for (int i = 0; i < courseRecords[level].length; i++)
         {
             try
@@ -215,6 +221,7 @@ public class CourseRecordTest
             }
         }
 
+        // Print course info if found
         if (found > -1)
         {
             System.out.println("Found");
