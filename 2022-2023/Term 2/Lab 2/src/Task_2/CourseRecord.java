@@ -23,10 +23,10 @@ public class CourseRecord
         if (classRoom < 0)
             throw new Exception("Invalid Class room number. Can't have a negative number.");
 
-        if (creditHours < 1.0 && creditHours > 3.0)
+        if (creditHours < 1.0 || creditHours > 3.0)
             throw new Exception("Invalid Course Credit Hours. Must be between 1 and 3");
 
-        this.courseCode = courseCode;
+        this.courseCode = courseCode.toUpperCase();
         this.courseTitle = courseTitle;
         this.instructorName = instructorName;
         this.classRoom = classRoom;
