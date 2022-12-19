@@ -17,7 +17,7 @@ public class CourseRecord
     public CourseRecord(String courseCode, String courseTitle, String instructorName, int classRoom, double creditHours)
             throws Exception
     {
-        if (!Pattern.matches("CS\\d{3}|CIS\\d{3}", courseCode))
+        if (!Pattern.matches("CS\\d{3}|CIS\\d{3}", courseCode.toUpperCase()))
             throw new Exception("Invalid Course Code. Must start with CS or CIS followed by 3 digits.");
 
         if (classRoom < 0)
