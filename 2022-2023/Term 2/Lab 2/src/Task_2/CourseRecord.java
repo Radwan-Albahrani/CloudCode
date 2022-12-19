@@ -18,13 +18,13 @@ public class CourseRecord
             throws Exception
     {
         if (!Pattern.matches("CS\\d{3}|CIS\\d{3}", courseCode))
-            throw new Exception("Invalid Course Code");
+            throw new Exception("Invalid Course Code. Must start with CS or CIS followed by 3 digits.");
 
         if (classRoom < 0)
-            throw new Exception("Invalid Course Information");
+            throw new Exception("Invalid Class room number. Can't have a negative number.");
 
         if (creditHours < 1.0 && creditHours > 3.0)
-            throw new Exception("Invalid Course Information");
+            throw new Exception("Invalid Course Credit Hours. Must be between 1 and 3");
 
         this.courseCode = courseCode;
         this.courseTitle = courseTitle;
