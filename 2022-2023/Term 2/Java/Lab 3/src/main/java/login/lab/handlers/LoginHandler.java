@@ -5,8 +5,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import javax.swing.JOptionPane;
-
 import login.lab.models.*;
 import login.lab.screens.*;
 
