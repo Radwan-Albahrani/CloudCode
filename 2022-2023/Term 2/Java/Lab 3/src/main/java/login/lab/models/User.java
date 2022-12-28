@@ -1,4 +1,4 @@
-package main.resources.models;
+package login.lab.models;
 
 public class User
 {

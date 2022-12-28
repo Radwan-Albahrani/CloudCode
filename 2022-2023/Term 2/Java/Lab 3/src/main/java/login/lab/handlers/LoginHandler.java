@@ -1,4 +1,4 @@
-package main.java.handlers;
+package login.lab.handlers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,7 +7,8 @@ import javax.swing.*;
 
 import javax.swing.JOptionPane;
 
-import main.resources.models.User;
+import login.lab.models.*;
+import login.lab.screens.*;
 
 public class LoginHandler implements ActionListener
 {
@@ -15,20 +16,23 @@ public class LoginHandler implements ActionListener
             new User("TestUser", "1234", "Radwan", "Albahrani", "2252"),
             new User("TestUser2", "12345", "Ahmad", "Ali", "2252"),
     };
-    JTextField username;
-    JPasswordField password;
+    JTextField usernameField;
+    JPasswordField passwordField;
+    LoginFrame loginFrame;
+    WelcomeScreen welcomeScreen;
 
-    public LoginHandler(JTextField Username, JPasswordField Password)
+    public LoginHandler(JTextField Username, JPasswordField Password, LoginFrame loginFrame)
     {
-        username = Username;
-        password = Password;
+        this.usernameField = Username;
+        this.passwordField = Password;
+        this.loginFrame = loginFrame;
     }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        String username = this.username.getText();
-        String password = new String(this.password.getPassword());
+        String username = this.usernameField.getText();
+        String password = new String(this.passwordField.getPassword());
         User currentUser = null;
         for (User user : users)
         {
@@ -45,9 +49,9 @@ public class LoginHandler implements ActionListener
                     JOptionPane.QUESTION_MESSAGE);
             if (secondPassword.equals(currentUser.getSecondPassword()))
             {
-                JOptionPane.showMessageDialog(null,
-                        "Welcome " + currentUser.getFirstName() + " " + currentUser.getLastName(), "Welcome",
-                        JOptionPane.INFORMATION_MESSAGE);
+                // Show welcome screen
+                this.loginFrame.dispose();
+                this.welcomeScreen = new WelcomeScreen(currentUser.getFirstName() + " " + currentUser.getLastName());
             }
             else
             {

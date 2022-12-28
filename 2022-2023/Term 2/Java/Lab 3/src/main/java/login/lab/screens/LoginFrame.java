@@ -1,9 +1,9 @@
-package main.java.components;
+package login.lab.screens;
 
 import java.awt.*;
 import javax.swing.*;
 
-import main.java.handlers.LoginHandler;
+import login.lab.handlers.LoginHandler;
 
 public class LoginFrame extends JFrame
 {
@@ -18,12 +18,14 @@ public class LoginFrame extends JFrame
         JLabel passwordLabel = new JLabel("Password: ");
         JPasswordField passwordText = new JPasswordField(20);
         JButton loginButton = new JButton("Login");
-        loginButton.addActionListener(new LoginHandler(userText, passwordText));
+        loginButton.addActionListener(new LoginHandler(userText, passwordText, this));
         add(userLabel);
         add(userText);
         add(passwordLabel);
         add(passwordText);
         add(loginButton);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }
