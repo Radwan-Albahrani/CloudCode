@@ -10,12 +10,18 @@ import javax.swing.JOptionPane;
 import login.lab.models.*;
 import login.lab.screens.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LoginHandler implements ActionListener
 {
-    User users[] = {
-            new User("TestUser", "1234", "Radwan", "Albahrani", "2252"),
-            new User("TestUser2", "12345", "Ahmad", "Ali", "2252"),
-    };
+    // Read users from resources
+    private List<User> users = new ArrayList<User>();
+
     JTextField usernameField;
     JPasswordField passwordField;
     LoginFrame loginFrame;
@@ -23,6 +29,7 @@ public class LoginHandler implements ActionListener
 
     public LoginHandler(JTextField Username, JPasswordField Password, LoginFrame loginFrame)
     {
+        readUsers();
         this.usernameField = Username;
         this.passwordField = Password;
         this.loginFrame = loginFrame;
@@ -63,6 +70,27 @@ public class LoginHandler implements ActionListener
         {
             JOptionPane.showMessageDialog(null, "Wrong username or password!", "Authentication Error",
                     JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void readUsers()
+    {
+        try
+        {
+            File file = new File("src/main/resources/users.txt");
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine();
+                String[] data = line.split(",");
+                User user = new User(data[0].trim(), data[1].trim(), data[2].trim(), data[3].trim(), data[4].trim());
+                users.add(user);
+            }
+            scanner.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
         }
     }
 }
