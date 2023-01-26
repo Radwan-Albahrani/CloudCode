@@ -1,0 +1,1 @@
+SELECT bdate, address FROM EMPLOYEE WHERE fname = "John" AND Minit = "B" AND lname = "Smith";
