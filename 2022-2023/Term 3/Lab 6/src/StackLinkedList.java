@@ -87,6 +87,11 @@ public class StackLinkedList
         }
     }
 
+    public void makeEmpty()
+    {
+        top = null;
+    }
+
     public static void main(String[] args)
     {
         testingMethod();
@@ -104,7 +109,17 @@ public class StackLinkedList
         stack.display();
         System.out.println("Peek: " + stack.peek());
         System.out.println("Pop: " + stack.pop());
+
+        System.out.println("Displaying Stack 1: ");
         stack.display();
+
+        StackLinkedList stack2 = new StackLinkedList();
+        while (!stack.isEmpty())
+        {
+            stack2.push(stack.pop());
+        }
+        System.out.println("Displaying Stack 2: ");
+        stack2.display();
     }
 
 }
