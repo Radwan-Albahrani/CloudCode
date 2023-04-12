@@ -1,3 +1,4 @@
+// Linked list stack class (Generic)
 public class LinkedListStack<E>
 {
     // top and size
@@ -25,7 +26,7 @@ public class LinkedListStack<E>
     }
 
     // ================= Methods =================
-    // push into the stack
+    // push into the stack top of the stack
     public void push(E data)
     {
         Node newNode = new Node(data);
@@ -37,11 +38,14 @@ public class LinkedListStack<E>
     // pop from the stack
     public E pop()
     {
-        if (top == null)
+        // if stack is empty, nothing to pop
+        if (isEmpty())
         {
             System.out.println("Stack is empty");
             return null;
         }
+
+        // Otherwise, pop from the stack and reduce size
         E data = top.data;
         top = top.next;
         size--;
@@ -51,11 +55,14 @@ public class LinkedListStack<E>
     // peek the top of the stack
     public E peek()
     {
-        if (top == null)
+        // if stack is empty, nothing to peek
+        if (isEmpty())
         {
             System.out.println("Stack is empty");
             return null;
         }
+
+        // Otherwise, peek the top of the stack
         return top.data;
     }
 

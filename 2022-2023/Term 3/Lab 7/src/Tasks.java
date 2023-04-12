@@ -4,21 +4,34 @@ public class Tasks
     // Bracket check
     public static boolean bracketCheck(String str)
     {
+        // Create a new linked list stack
         LinkedListStack<Character> stack = new LinkedListStack<>();
+
+        // Loop through the given string
         for (int i = 0; i < str.length(); i++)
         {
+            // Get the character at the current index
             char ch = str.charAt(i);
+
+            // If the character is an opening bracket, push it into the stack
             if (ch == '(' || ch == '{' || ch == '[')
             {
                 stack.push(ch);
             }
+
+            // if the character is a closing bracket
             else if (ch == ')' || ch == '}' || ch == ']')
             {
+                // Check if the stack is empty. if it is, return false
                 if (stack.isEmpty())
                 {
                     return false;
                 }
+
+                // Get the latest open bracket from the stack
                 char top = stack.pop();
+
+                // Check if the closing bracket matches the open bracket
                 if (ch == ')' && top != '(')
                 {
                     return false;
@@ -33,6 +46,7 @@ public class Tasks
                 }
             }
         }
+        // once the loop is complete, return the state of the stack. if empty, it would be balanced. if not empty, it would not be balanced.
         return stack.isEmpty();
     }
 
