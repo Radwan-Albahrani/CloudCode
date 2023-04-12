@@ -71,24 +71,33 @@ public class Tasks
     private static void TestBracketCheck()
     {
         String str = "((a+b)*(c-d))";
-        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str)); // true
+        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str) + "\n"); // true
 
         str = "((a+b)*(c-d)";
-        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str)); // false
+        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str) + "\n"); // false
+
+        str = "[a+b(c-d)]";
+        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str) + "\n"); // true
+
+        str = "[a+b(c-d))";
+        System.out.println("The string: " + str + "\nBalance state: " + bracketCheck(str) + "\n"); // false
+
     }
 
     private static void TestDecimalToBinary()
     {
         int num = 10;
-        System.out.println("The number " + num + "\nIn binary is " + decimalToBinary(num)); // 1010
+        System.out.println("The number " + num + "\nIn binary is " + decimalToBinary(num) + "\n"); // 1010
 
         num = 100;
-        System.out.println("The number " + num + "\nIn binary is " + decimalToBinary(num)); // 1100100
+        System.out.println("The number " + num + "\nIn binary is " + decimalToBinary(num) + "\n"); // 1100100
     }
 
     public static void main(String[] args)
     {
+        System.out.println("---------------------------- Bracket testing ----------------------------");
         TestBracketCheck();
+        System.out.println("---------------------------- Decimal to binary testing ----------------------------");
         TestDecimalToBinary();
     }
 }
