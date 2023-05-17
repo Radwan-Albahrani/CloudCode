@@ -13,13 +13,13 @@ public class App
         bst.insert(17);
         bst.insert(1);
 
-        System.out.println("Inorder Traversal");
+        System.out.println("InOrder Traversal");
         bst.inOrder(bst.getRoot());
 
-        System.out.println("Preorder Traversal");
+        System.out.println("PreOrder Traversal");
         bst.preOrder(bst.getRoot());
 
-        System.out.println("Postorder Traversal");
+        System.out.println("PostOrder Traversal");
         bst.postOrder(bst.getRoot());
 
         System.out.println("Find Min");
@@ -37,7 +37,7 @@ public class App
         System.out.println("Delete 13");
         bst.deleteNode(13);
 
-        System.out.println("Inorder Traversal");
+        System.out.println("InOrder Traversal");
         bst.inOrder(bst.getRoot());
 
     }
