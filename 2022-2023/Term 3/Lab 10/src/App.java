@@ -40,5 +40,12 @@ public class App
         System.out.println("InOrder Traversal");
         bst.inOrder(bst.getRoot());
 
+        System.out.println("Find Height");
+        System.out.println(bst.findHeight(bst.getRoot()));
+
+        System.out.println("Find depth of 5");
+        BinarySearchNode node = bst.find(5);
+        System.out.println(bst.findDepth(node));
+
     }
 }
