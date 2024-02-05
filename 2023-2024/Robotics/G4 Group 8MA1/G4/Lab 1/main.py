@@ -10,17 +10,13 @@ from pybricks.robotics import DriveBase
 ev3 = EV3Brick()
 
 # Initialize a motor at port B.
-left_wheel = Motor(Port.B)
-right_wheel = Motor(Port.C)
-
-# Connect Wheels
-robot = DriveBase(left_wheel, right_wheel, 56, 114)
+test_motor = Motor(Port.B)
 
 # Play a sound.
 ev3.speaker.beep()
 
 # Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
-robot.straight(500)
+test_motor.run_target(500, 90)
 
 # Play another beep sound.
-# ev3.speaker.beep(frequency=1000, duration=5000)
+ev3.speaker.beep(frequency=1000, duration=5000)
