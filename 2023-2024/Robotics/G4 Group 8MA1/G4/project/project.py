@@ -23,18 +23,27 @@ from pybricks.parameters import (
 )
 from pybricks.tools import print, wait, StopWatch
 
-import struct
+import struct, select, time, threading, random
 
 MAX_SPEED = 120
 MAX_CANNON_SPEED = 10000
 MAX_RESET_SPEED = 120
 MAX_ROTATION_RESET = -120
 
-# Create your objects here.
+# Create your objects here.# Initialize the display and the gyro sensor
+ev3 = EV3Brick()
+display = ev3.screen
+speaker = ev3.speaker
+
 left_motor = Motor(Port.A)
 right_motor = Motor(Port.D)
-ultrasonic = UltrasonicSensor(Port.S2)
 cannon = Motor(Port.C)
+
+ultrasonic = UltrasonicSensor(Port.S2)
+color_sensor = ColorSensor(Port.S1)  # TODO: get correct port
+gyro = GyroSensor(Port.S3)  # TODO: get correct port
+
+speaker.say("Hello!")
 
 cannon.run_until_stalled(MAX_CANNON_SPEED)
 cannon.reset_angle(0)
@@ -48,6 +57,8 @@ right_speed = 0
 infile_path = "/dev/input/event4"
 in_file = open(infile_path, "rb")
 
+running = True
+
 # Define the format the event data will be read
 # See https://docs.python.org/3/library/struct.html#format-characters for more details
 FORMAT = "llHHi"
@@ -60,35 +71,138 @@ def scale(val, src, dst):
     return (float(val - src[0]) / (src[1] - src[0])) * (dst[1] - dst[0]) + dst[0]
 
 
-# Create a loop to react to events
-while event:
+# Define the rotation angles
+angles = {
+    547: -90,  # LEFT dpad
+    544: -180,  # BACK dpad
+    545: -360,  # UP dpad
+    305: 90,  # Circle
+    304: 180,  # X
+    307: 360,  # Triangle
+}
 
+# Define the frequencies for the notes (in Hz)
+C6 = 1047
+C5 = 523
+B5 = 988
+B4 = 494
+A5 = 880
+A4 = 440
+F5 = 698
+E5 = 659
+
+# Define the rhythm (in ms)
+note_duration = 700  # 0.7 seconds
+pause_duration = 1000  # calculated based on tempo 160
+
+# Define the melody with pauses between notes
+melody = [
+    (C6, note_duration),
+    (0, pause_duration),
+    (C6, note_duration),
+    (0, pause_duration),
+    (C6, note_duration),
+    (0, pause_duration),
+    (C5, note_duration),
+    (0, pause_duration),
+    (B5, note_duration),
+    (0, pause_duration),
+    (B5, note_duration),
+    (0, pause_duration),
+    (B5, note_duration),
+    (0, pause_duration),
+    (B4, note_duration),
+    (0, pause_duration),
+    (A5, note_duration),
+    (0, pause_duration),
+    (A5, note_duration),
+    (0, pause_duration),
+    (A5, note_duration),
+    (0, pause_duration),
+    (A4, note_duration),
+    (0, pause_duration),
+    (F5, note_duration),
+    (0, pause_duration),
+    (F5, note_duration),
+    (0, pause_duration),
+    (E5, note_duration),
+    (0, pause_duration),
+    (C6, note_duration),
+    (0, pause_duration),
+]
+speaker_busy = False
+
+
+def play_rocket():
+    global speaker_busy
+    if speaker_busy:
+        return
+    speaker_busy = True
+    speaker.play_file("assets/missile.wav")
+    speaker_busy = False
+
+
+def play_melody():
+    global speaker_busy
+    if speaker_busy:
+        return
+    speaker_busy = True
+    for note, duration in melody:
+        speaker.beep(note, duration)
+    speaker_busy = False
+
+
+play_rocket_thread = threading.Thread(target=play_rocket)
+play_melody_thread = threading.Thread(target=play_melody)
+
+
+def handle_event(event):
+    global running
+    global left_speed
+    global left_motor
+    global right_motor
+    global right_speed
     # Place event data into variables
     (tv_sec, tv_usec, ev_type, code, value) = struct.unpack(FORMAT, event)
 
-    if ultrasonic.distance() < 100:
-        left_motor.dc(-MAX_SPEED / 2)
-        right_motor.dc(-MAX_SPEED / 2)
-        left_speed = 0
-        right_speed = 0
-        time.sleep(1)
-        # Set motor speed
-        left_motor.dc(left_speed)
-        right_motor.dc(right_speed)
-        # Read the next event
-        event = in_file.read(EVENT_SIZE)
-        continue
-
     # If a button was pressed or released
     if ev_type == 1:
-        if code == 310 and value == 0:
+        # Rotate the motor by the corresponding angle based on the button press
+        if code in angles and value == 1:  # Button press event
+            # Rotate the motor by the corresponding angle
+            angle = angles[code]
+            right_motor.dc(MAX_SPEED)
+            left_motor.dc(-MAX_SPEED)
+            if angle < 0:
+                right_motor.dc(MAX_SPEED)
+                left_motor.dc(-MAX_SPEED)
+                time.sleep(angle / 140)
+            else:
+                right_motor.dc(-MAX_SPEED)
+                left_motor.dc(MAX_SPEED)
+                time.sleep(angle / 140)
+
+        # Play the shooting sound and display the missile image when the cannon button is pressed
+        elif code == 310 and value == 0:
+            # Cannon button was pressed
             cannon.dc(MAX_CANNON_SPEED)
+            # Play shooting sound
+            play_rocket_thread.start()
+            display.load_image("assets/missile.png")  # Display missile image
             time.sleep(0.5)
             cannon.reset_angle(0)
             cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)
+            display.clear()  # Clear the screen
+
+        # Play the melody
+        elif code == 311 and value == 0:
+            play_melody_thread.start()
+
+        # Pause/resume the code when the PS Home button is pressed
+        elif code == 316 and value == 0:
+            running = False
 
     elif ev_type == 3:  # Stick was moved
-
         # React to the left stick
         if code == 1:
             left_speed = scale(value, (0, 255), (MAX_SPEED, -MAX_SPEED))
@@ -101,9 +215,79 @@ while event:
     left_motor.dc(left_speed)
     right_motor.dc(right_speed)
 
-    # Read the next event
-    event = in_file.read(EVENT_SIZE)
+
+def check_distance():
+
+    if ultrasonic.distance() < 150:
+
+        # Generate a small random factor between -0.2 and 0.2
+        random_factor = random.uniform(-0.2, 0.2)
+
+        # Apply the random factor to the motor speeds
+        left_motor.dc((-MAX_SPEED) * (1 + random_factor))
+        right_motor.dc((-MAX_SPEED) * (1 - random_factor))
+
+        left_speed = 0
+        right_speed = 0
+        time.sleep(1)
+
+        # Set motor speed
+        left_motor.dc(left_speed)
+        right_motor.dc(right_speed)
 
 
+def handle_color_sensor():
+
+    if color_sensor.reflection():
+
+        # Generate a small random factor between -0.2 and 0.2
+        random_factor = random.uniform(-0.2, 0.2)
+
+        # Apply the random factor to the motor speeds
+        left_motor.dc((MAX_SPEED) * (1 + random_factor))
+        right_motor.dc((MAX_SPEED) * (1 - random_factor))
+
+        time.sleep(1)
+
+        # Set motor speed to 0
+        left_motor.dc(0)
+        right_motor.dc(0)
+
+        return True
+    return False
+
+def event_loop():
+    while running:
+        ready_to_read = True
+        if ready_to_read:
+            event = in_file.read(EVENT_SIZE)
+            handle_event(event)
+
+
+def distance_check_loop():
+    while running:
+        check_distance()
+        time.sleep(0.1)  # Add a short delay to prevent the loop from running too fast
+
+
+def button_press_loop():
+    while running:
+        handle_color_sensor()
+        time.sleep(0.1)  # Add a short delay to prevent the loop from running too fast
+
+
+# Start the threads
+event_thread = threading.Thread(target=event_loop)
+distance_thread = threading.Thread(target=distance_check_loop)
+button_thread = threading.Thread(target=button_press_loop)
+
+event_thread.start()
+distance_thread.start()
+button_thread.start()
+
+while running:
+    continue
+
+speaker.say("Goodbye!")
 
 in_file.close()
