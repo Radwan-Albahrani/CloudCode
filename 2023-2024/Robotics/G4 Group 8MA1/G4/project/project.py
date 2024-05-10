@@ -23,14 +23,15 @@ from pybricks.parameters import (
 )
 from pybricks.tools import print, wait, StopWatch
 
-import struct, select, time, threading, random
+import struct, time, threading, random
 
+# Default values for the bot
 MAX_SPEED = 120
 MAX_CANNON_SPEED = 10000
 MAX_RESET_SPEED = 120
 MAX_ROTATION_RESET = -120
 
-# Create your objects here.# Initialize the display and the gyro sensor
+# Initialize all the objects
 ev3 = EV3Brick()
 display = ev3.screen
 speaker = ev3.speaker
@@ -40,10 +41,8 @@ right_motor = Motor(Port.D)
 cannon = Motor(Port.C)
 
 ultrasonic = UltrasonicSensor(Port.S2)
-color_sensor = ColorSensor(Port.S1)  # TODO: get correct port
-gyro = GyroSensor(Port.S3)  # TODO: get correct port
-
-speaker.say("Hello!")
+color_sensor = ColorSensor(Port.S1)
+gyro = GyroSensor(Port.S3)
 
 cannon.run_until_stalled(MAX_CANNON_SPEED)
 cannon.reset_angle(0)
@@ -57,28 +56,20 @@ right_speed = 0
 infile_path = "/dev/input/event4"
 in_file = open(infile_path, "rb")
 
-running = True
-
 # Define the format the event data will be read
 # See https://docs.python.org/3/library/struct.html#format-characters for more details
 FORMAT = "llHHi"
 EVENT_SIZE = struct.calcsize(FORMAT)
 event = in_file.read(EVENT_SIZE)
 
-
-# A helper function for converting stick values (0 to 255) to more usable numbers (-100 to 100)
-def scale(val, src, dst):
-    return (float(val - src[0]) / (src[1] - src[0])) * (dst[1] - dst[0]) + dst[0]
-
-
 # Define the rotation angles
 angles = {
-    547: -90,  # LEFT dpad
-    544: -180,  # BACK dpad
-    545: -360,  # UP dpad
-    305: 90,  # Circle
-    304: 180,  # X
-    307: 360,  # Triangle
+    (305, 1): 90,  # Circle button pressed
+    (304, 1): 180,  # X button pressed
+    (307, 1): 360,  # Triangle button pressed
+    (16, -1): -90,  # LEFT dpad
+    (17, 1): -180,  # DOWN dpad
+    (17, -1): -360  # UP dpad
 }
 
 # Define the frequencies for the notes (in Hz)
@@ -97,42 +88,14 @@ pause_duration = 1000  # calculated based on tempo 160
 
 # Define the melody with pauses between notes
 melody = [
-    (C6, note_duration),
-    (0, pause_duration),
-    (C6, note_duration),
-    (0, pause_duration),
-    (C6, note_duration),
-    (0, pause_duration),
-    (C5, note_duration),
-    (0, pause_duration),
-    (B5, note_duration),
-    (0, pause_duration),
-    (B5, note_duration),
-    (0, pause_duration),
-    (B5, note_duration),
-    (0, pause_duration),
-    (B4, note_duration),
-    (0, pause_duration),
-    (A5, note_duration),
-    (0, pause_duration),
-    (A5, note_duration),
-    (0, pause_duration),
-    (A5, note_duration),
-    (0, pause_duration),
-    (A4, note_duration),
-    (0, pause_duration),
-    (F5, note_duration),
-    (0, pause_duration),
-    (F5, note_duration),
-    (0, pause_duration),
-    (E5, note_duration),
-    (0, pause_duration),
-    (C6, note_duration),
-    (0, pause_duration),
+    (C6, note_duration), (0, pause_duration), (C6, note_duration), (0, pause_duration), (C6, note_duration), (0, pause_duration), (C5, note_duration), (0, pause_duration),
+    (B5, note_duration), (0, pause_duration), (B5, note_duration), (0, pause_duration), (B5, note_duration), (0, pause_duration), (B4, note_duration), (0, pause_duration),
+    (A5, note_duration), (0, pause_duration), (A5, note_duration), (0, pause_duration), (A5, note_duration), (0, pause_duration), (A4, note_duration), (0, pause_duration),
+    (F5, note_duration), (0, pause_duration), (F5, note_duration), (0, pause_duration), (E5, note_duration), (0, pause_duration), (C6, note_duration), (0, pause_duration),
 ]
 speaker_busy = False
 
-
+# Function to play the rocket sound
 def play_rocket():
     global speaker_busy
     if speaker_busy:
@@ -141,7 +104,7 @@ def play_rocket():
     speaker.play_file("assets/missile.wav")
     speaker_busy = False
 
-
+# Function to play the melody
 def play_melody():
     global speaker_busy
     if speaker_busy:
@@ -151,11 +114,15 @@ def play_melody():
         speaker.beep(note, duration)
     speaker_busy = False
 
-
+# Threading for the speaker, to ensure the bot can still move around while playing sounds
 play_rocket_thread = threading.Thread(target=play_rocket)
 play_melody_thread = threading.Thread(target=play_melody)
 
+# A helper function for converting stick values (0 to 255) to more usable numbers (-100 to 100)
+def scale(val, src, dst):
+    return (float(val - src[0]) / (src[1] - src[0])) * (dst[1] - dst[0]) + dst[0]
 
+# Function to handle the event data from the file (Controller inputs)
 def handle_event(event):
     global running
     global left_speed
@@ -165,26 +132,24 @@ def handle_event(event):
     # Place event data into variables
     (tv_sec, tv_usec, ev_type, code, value) = struct.unpack(FORMAT, event)
 
-    # If a button was pressed or released
-    if ev_type == 1:
-        # Rotate the motor by the corresponding angle based on the button press
-        if code in angles and value == 1:  # Button press event
+    # For rotation
+    if ev_type == 1 or ev_type == 3:
+        angle = angles.get((code, value))
+        if angle is not None:
             # Rotate the motor by the corresponding angle
-            angle = angles[code]
-            right_motor.dc(MAX_SPEED)
-            left_motor.dc(-MAX_SPEED)
-            if angle < 0:
+            if angle < 0: # Turn Clockwise
                 right_motor.dc(MAX_SPEED)
                 left_motor.dc(-MAX_SPEED)
-                time.sleep(angle / 140)
-            else:
+                time.sleep(abs(angle) / 140)
+            else: # Turn Anticlockwise
                 right_motor.dc(-MAX_SPEED)
                 left_motor.dc(MAX_SPEED)
-                time.sleep(angle / 140)
+                time.sleep(abs(angle) / 140)
 
-        # Play the shooting sound and display the missile image when the cannon button is pressed
-        elif code == 310 and value == 0:
-            # Cannon button was pressed
+    # For button presses
+    if ev_type == 1:
+        # Fire the cannon if the left bumper is pressed
+        if code == 310 and value == 0:
             cannon.dc(MAX_CANNON_SPEED)
             # Play shooting sound
             play_rocket_thread.start()
@@ -194,11 +159,11 @@ def handle_event(event):
             cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)
             display.clear()  # Clear the screen
 
-        # Play the melody
+        # Play the melody if right bumper is pressed
         elif code == 311 and value == 0:
             play_melody_thread.start()
 
-        # Pause/resume the code when the PS Home button is pressed
+        # Stop the bot when the PS Home button is pressed
         elif code == 316 and value == 0:
             running = False
 
@@ -216,11 +181,13 @@ def handle_event(event):
     right_motor.dc(right_speed)
 
 
+# Function to check the distance and avoid obstacles
 def check_distance():
 
     if ultrasonic.distance() < 150:
 
         # Generate a small random factor between -0.2 and 0.2
+        # This is so that the bot doesn't always turn the same way, to avoid getting stuck
         random_factor = random.uniform(-0.2, 0.2)
 
         # Apply the random factor to the motor speeds
@@ -235,12 +202,14 @@ def check_distance():
         left_motor.dc(left_speed)
         right_motor.dc(right_speed)
 
-
+# Function to check the color sensor and stop the bot
 def handle_color_sensor():
 
+    # if any reflection is detected, move forward
     if color_sensor.reflection():
 
         # Generate a small random factor between -0.2 and 0.2
+        # This is so that the bot doesn't always turn the same way, to avoid getting stuck
         random_factor = random.uniform(-0.2, 0.2)
 
         # Apply the random factor to the motor speeds
@@ -256,6 +225,12 @@ def handle_color_sensor():
         return True
     return False
 
+# ----------------------------------------------------------------
+# Ensure the bot is set to running at the start of the code.
+running = True
+speaker.say("Hello!")
+
+# Function to handle the event loop  - Threading
 def event_loop():
     while running:
         ready_to_read = True
@@ -263,14 +238,14 @@ def event_loop():
             event = in_file.read(EVENT_SIZE)
             handle_event(event)
 
-
+# Function to check the distance and avoid obstacles - Threading
 def distance_check_loop():
     while running:
         check_distance()
         time.sleep(0.1)  # Add a short delay to prevent the loop from running too fast
 
-
-def button_press_loop():
+# Function to check the color sensor and stop the bot - Threading
+def color_sensor_loop():
     while running:
         handle_color_sensor()
         time.sleep(0.1)  # Add a short delay to prevent the loop from running too fast
@@ -279,15 +254,17 @@ def button_press_loop():
 # Start the threads
 event_thread = threading.Thread(target=event_loop)
 distance_thread = threading.Thread(target=distance_check_loop)
-button_thread = threading.Thread(target=button_press_loop)
+button_thread = threading.Thread(target=color_sensor_loop)
 
 event_thread.start()
 distance_thread.start()
 button_thread.start()
 
+# Continue as long as running is True
 while running:
     continue
 
+# Once shut down, say goodbye and close the file
 speaker.say("Goodbye!")
 
 in_file.close()
