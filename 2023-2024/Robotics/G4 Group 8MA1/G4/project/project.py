@@ -30,6 +30,7 @@ MAX_SPEED = 120
 MAX_CANNON_SPEED = 10000
 MAX_RESET_SPEED = 120
 MAX_ROTATION_RESET = -120
+TIME_TO_ROTATE = 3.3
 
 # Initialize all the objects
 ev3 = EV3Brick()
@@ -43,10 +44,16 @@ cannon = Motor(Port.C)
 ultrasonic = UltrasonicSensor(Port.S2)
 color_sensor = ColorSensor(Port.S1)
 gyro = GyroSensor(Port.S3)
+lock_cannon = False
+def reset_cannon():
+    global lock_cannon
+    lock_cannon = True
+    cannon.run_until_stalled(MAX_CANNON_SPEED)
+    cannon.reset_angle(0)
+    cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)
+    lock_cannon = False
 
-cannon.run_until_stalled(MAX_CANNON_SPEED)
-cannon.reset_angle(0)
-cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)
+reset_cannon_thread = threading.Thread(target=reset_cannon)
 
 left_speed = 0
 right_speed = 0
@@ -94,6 +101,7 @@ melody = [
     (F5, note_duration), (0, pause_duration), (F5, note_duration), (0, pause_duration), (E5, note_duration), (0, pause_duration), (C6, note_duration), (0, pause_duration),
 ]
 speaker_busy = False
+display_busy = False
 
 # Function to play the rocket sound
 def play_rocket():
@@ -114,9 +122,32 @@ def play_melody():
         speaker.beep(note, duration)
     speaker_busy = False
 
+def display_rocket():
+    global display_busy
+    global display
+    if display_busy:
+        return
+    display.load_image("assets/missile.png")
+    time.sleep(2)
+    display.clear()
+
+def handle_cannon():
+    global lock_cannon
+    if lock_cannon:
+        return
+    cannon.dc(MAX_CANNON_SPEED)
+    # Play shooting sound
+    play_rocket_thread.start()
+    # Display rocket image
+    display_rocket_thread.start() # Display missile image
+    time.sleep(0.5)
+    cannon.reset_angle(0)
+    cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)  # Clear the screen
 # Threading for the speaker, to ensure the bot can still move around while playing sounds
 play_rocket_thread = threading.Thread(target=play_rocket)
 play_melody_thread = threading.Thread(target=play_melody)
+handle_cannon_thread = threading.Thread(target=handle_cannon)
+display_rocket_thread =threading.Thread(target=display_rocket)
 
 # A helper function for converting stick values (0 to 255) to more usable numbers (-100 to 100)
 def scale(val, src, dst):
@@ -140,24 +171,17 @@ def handle_event(event):
             if angle < 0: # Turn Clockwise
                 right_motor.dc(MAX_SPEED)
                 left_motor.dc(-MAX_SPEED)
-                time.sleep(abs(angle) / 140)
+                time.sleep(TIME_TO_ROTATE * (abs(angle)/360))
             else: # Turn Anticlockwise
                 right_motor.dc(-MAX_SPEED)
                 left_motor.dc(MAX_SPEED)
-                time.sleep(abs(angle) / 140)
+                time.sleep(TIME_TO_ROTATE * (abs(angle)/360))
 
     # For button presses
     if ev_type == 1:
         # Fire the cannon if the left bumper is pressed
         if code == 310 and value == 0:
-            cannon.dc(MAX_CANNON_SPEED)
-            # Play shooting sound
-            play_rocket_thread.start()
-            display.load_image("assets/missile.png")  # Display missile image
-            time.sleep(0.5)
-            cannon.reset_angle(0)
-            cannon.run_angle(MAX_RESET_SPEED, MAX_ROTATION_RESET)
-            display.clear()  # Clear the screen
+            handle_cannon_thread.start()
 
         # Play the melody if right bumper is pressed
         elif code == 311 and value == 0:
@@ -184,7 +208,7 @@ def handle_event(event):
 # Function to check the distance and avoid obstacles
 def check_distance():
 
-    if ultrasonic.distance() < 150:
+    if ultrasonic.distance() < 120:
 
         # Generate a small random factor between -0.2 and 0.2
         # This is so that the bot doesn't always turn the same way, to avoid getting stuck
@@ -228,7 +252,6 @@ def handle_color_sensor():
 # ----------------------------------------------------------------
 # Ensure the bot is set to running at the start of the code.
 running = True
-speaker.say("Hello!")
 
 # Function to handle the event loop  - Threading
 def event_loop():
@@ -250,21 +273,45 @@ def color_sensor_loop():
         handle_color_sensor()
         time.sleep(0.1)  # Add a short delay to prevent the loop from running too fast
 
+def say_hello():
+    global speaker_busy
+    global lock_cannon
+    global cannon
+    speaker_busy = True
+    speaker.set_volume(200)
+    while lock_cannon:
+        pass
+    speaker.say("Hello!")
+    lock_cannon = True
+    for i in range(2):
+        cannon.dc(MAX_SPEED/2)
+        time.sleep(0.1)
+        cannon.dc(-MAX_SPEED/2)
+    lock_cannon = False
+    reset_cannon_thread.start()
+    speaker.set_volume(20)
+    speaker_busy = False
 
 # Start the threads
 event_thread = threading.Thread(target=event_loop)
 distance_thread = threading.Thread(target=distance_check_loop)
 button_thread = threading.Thread(target=color_sensor_loop)
+hello_thread = threading.Thread(target=say_hello)
 
+
+
+hello_thread.start()
 event_thread.start()
 distance_thread.start()
 button_thread.start()
+
 
 # Continue as long as running is True
 while running:
     continue
 
 # Once shut down, say goodbye and close the file
+speaker.set_volume(100)
 speaker.say("Goodbye!")
 
 in_file.close()
