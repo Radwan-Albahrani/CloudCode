@@ -71,7 +71,6 @@ except:
     speaker.set_volume(100)
     speaker.say("No controller detected. Exiting...")
     sys.exit()
-    
 
 
 # Define the format the event data will be read
